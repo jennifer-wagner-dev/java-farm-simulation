@@ -1,46 +1,17 @@
 package animals;
 
-public class Cow {
+public class Cow extends Animal {
 
     // Eigenschaften Kuh
-    private String name;
-    private int hunger;
-    private int age;
     private int milk;
 
     public Cow() {
 
     }
 
-    public Cow(String name, int hunger, int age, int wool) {
-        this.name = name;
-        this.hunger = hunger;
-        this.age = age;
-        this.milk = wool;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getHunger() {
-        return hunger;
-    }
-
-    public void setHunger(int hunger) {
-        this.hunger = hunger;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
+    public Cow(String name, int hunger, int age, int milk) {
+        super(name, hunger, age);
+        this.milk = milk;
     }
 
     public int getMilk() {
@@ -49,5 +20,16 @@ public class Cow {
 
     public void setMilk(int milk) {
         this.milk = milk;
+    }
+
+    @Override
+    public void feed() {
+        setHunger(getHunger() - 10);
+
+        if (getHunger() < 0) {
+            setHunger(0);
+        }
+
+        milk = milk + 1;
     }
 }

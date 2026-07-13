@@ -1,11 +1,8 @@
 package animals;
 
-public class Sheep {
+public class Sheep extends Animal {
 
     // Eigenschaften Schaf
-    private String name;
-    private int hunger;
-    private int age;
     private int wool;
 
     public Sheep() {
@@ -13,34 +10,8 @@ public class Sheep {
     }
 
     public Sheep(String name, int hunger, int age, int wool) {
-        this.name = name;
-        this.hunger = hunger;
-        this.age = age;
+        super(name, hunger, age);
         this.wool = wool;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getHunger() {
-        return hunger;
-    }
-
-    public void setHunger(int hunger) {
-        this.hunger = hunger;
-    }
-
-    public int getAge() {
-        return age;
-    }
-
-    public void setAge(int age) {
-        this.age = age;
     }
 
     public int getWool() {
@@ -50,4 +21,11 @@ public class Sheep {
     public void setWool(int wool) {
         this.wool = wool;
     }
+
+    @Override
+    public void feed() {
+        super.feed();
+        wool = wool + 1;
+    }
+
 }

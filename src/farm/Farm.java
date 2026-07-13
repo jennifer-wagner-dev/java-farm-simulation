@@ -73,27 +73,15 @@ public class Farm {
     public void reduceHunger(String animal) {
 
         if (animal.equals("schaf")) {
-            sheep.setHunger(sheep.getHunger() - 20);
-
-            if (sheep.getHunger() < 0) {
-                sheep.setHunger(0);
-            }
+            sheep.feed();
         }
 
         if (animal.equals("kuh")) {
-            cow.setHunger(cow.getHunger() - 20);
-
-            if (cow.getHunger() < 0) {
-                cow.setHunger(0);
-            }
+            cow.feed();
         }
 
         if (animal.equals("huhn")) {
-            chicken.setHunger(chicken.getHunger() - 20);
-
-            if (chicken.getHunger() < 0) {
-                chicken.setHunger(0);
-            }
+            chicken.feed();
         }
     }
 
