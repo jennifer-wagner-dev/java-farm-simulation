@@ -119,7 +119,7 @@ public class Animal implements HungerManager {
     // Senkt den Hungerwert beim Füttern
     @Override
     public void feed() {
-        hunger = hunger - 20;
+        hunger = hunger - 15;
 
         // Hunger soll nicht unter 0 fallen
         if (hunger < 0) {
@@ -133,7 +133,7 @@ public class Animal implements HungerManager {
 
         // Kranke Tiere bekommen mehr Hunger
         if (sick) {
-            hunger = hunger + 20;
+            hunger = hunger + 10;
 
         } else {
             // Gesunde Tiere bekommen normalen Hunger

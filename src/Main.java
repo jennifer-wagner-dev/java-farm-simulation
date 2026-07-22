@@ -25,9 +25,8 @@ public class Main {
         System.out.print("Wie soll deine Farm heißen? ");
         String farmName = scanner.nextLine().trim();
 
-        // Falls kein Farmname eingegeben wurde
         if (farmName.isBlank()) {
-            farmName = "Chaos-Farm";
+            farmName = "ShitShow Stables";
         }
 
         // Farmnamen setzen
@@ -41,17 +40,17 @@ public class Main {
         System.out.println(GameStyle.color("Hinweis: Enten mit Führungsambitionen sind meldepflichtig.", GameStyle.CYAN));
 
         // Starttiere zur Farm hinzufügen
-        farm.addAnimal(new Sheep("Shaun", 80, 3, 20));
-        farm.addAnimal(new Sheep("Wolly", 55, 2, 15));
+        farm.addAnimal(new Sheep("Shaun", 80, 3, 3));
+        farm.addAnimal(new Sheep("Wolly", 55, 2, 2));
 
-        farm.addAnimal(new Cow("Berta", 60, 5, 30));
-        farm.addAnimal(new Cow("Luna", 40, 4, 20));
+        farm.addAnimal(new Cow("Berta", 60, 5, 4));
+        farm.addAnimal(new Cow("Luna", 40, 4, 3));
 
-        farm.addAnimal(new Chicken("Henrietta", 30, 2, 5));
-        farm.addAnimal(new Chicken("Gisela", 70, 1, 8));
+        farm.addAnimal(new Chicken("Henrietta", 30, 2, 2));
+        farm.addAnimal(new Chicken("Gisela", 70, 1, 3));
 
-        // Neue Tierart
-        farm.addAnimal(new Duck("Donald", 45, 2, 12));
+        farm.addAnimal(new Duck("Donald", 45, 2, 2));
+
 
         // Steuert, ob das Spiel weiterläuft
         boolean gameOver = false;
@@ -62,14 +61,10 @@ public class Main {
         // Hauptschleife des Spiels
         while (!gameOver) {
 
-            // Schönen Kopfbereich anzeigen
             printGameHeader(roundCounter);
-
-            // Menü schön formatiert anzeigen
             printMenu();
 
-            // Auswahl des Users einlesen
-            String choice = scanner.nextLine().trim();
+            String choice = readMenuChoice(scanner);
 
             // Menü-Auswahl prüfen
             switch (choice) {
@@ -82,12 +77,13 @@ public class Main {
 
                 // Einzelnes Tier füttern
                 case "1":
-                    System.out.print("Welches Tier möchtest du füttern? Gib den Namen ein: ");
+                    System.out.print("Für welches Tier soll eine Versorgungsmaßnahme eingeleitet werden? ");
                     String animalName = scanner.nextLine().trim();
 
                     Animal selectedAnimal = farm.getAnimalByName(animalName);
 
                     if (selectedAnimal == null) {
+                        GameStyle.pressEnterToContinue(scanner);
                         break;
                     }
 
@@ -103,10 +99,8 @@ public class Main {
 
                     roundCounter = finishRound(roundCounter, scanner);
 
-                    if (farm.hasNoAnimals()) {
-                        System.out.println("Alle Tiere sind weg. Die Farmverwaltung wurde vorsorglich aufgelöst.");
-                        gameOver = true;
-                    }
+                    gameOver = checkGameOver();
+
                     GameStyle.pressEnterToContinue(scanner);
                     break;
 
@@ -114,12 +108,10 @@ public class Main {
                 case "2":
                     createAnimal(scanner);
 
-                    roundCounter = finishRound(roundCounter, scanner);
+                    farm.hungerAllAnimals();
 
-                    if (farm.hasNoAnimals()) {
-                        System.out.println("Alle Tiere sind weg. Die Farmverwaltung wurde vorsorglich aufgelöst.");
-                        gameOver = true;
-                    }
+                    gameOver = checkGameOver();
+
                     GameStyle.pressEnterToContinue(scanner);
                     break;
 
@@ -127,33 +119,43 @@ public class Main {
                 case "3":
                     farm.collectResources();
 
+                    farm.hungerAllAnimals();
+
                     roundCounter = finishRound(roundCounter, scanner);
 
-                    if (farm.hasNoAnimals()) {
-                        System.out.println("Alle Tiere sind weg. Die Farmverwaltung wurde vorsorglich aufgelöst.");
-                        gameOver = true;
-                    }
+                    gameOver = checkGameOver();
+
                     GameStyle.pressEnterToContinue(scanner);
                     break;
 
-                // Ressourcenlager anzeigen
+
+                //Ressourcenlager anzeigen
                 case "4":
+                    GameStyle.clearScreen();
+                    printGameHeader(roundCounter);
+
                     farm.printStorage();
+
+                    farm.hungerAllAnimals();
+
+                    roundCounter = finishRound(roundCounter, scanner);
+
+                    GameStyle.pressEnterToContinue(scanner);
                     break;
 
                 // Tier behandeln lassen
                 case "5":
-                    System.out.print("Welches Tier soll behandelt werden? ");
+                    System.out.print("Für welches Tier soll die Tierärztin gerufen werden? ");
                     String animalToTreat = scanner.nextLine().trim();
 
                     farm.treatAnimalByName(animalToTreat);
 
+                    farm.hungerAllAnimals();
+
                     roundCounter = finishRound(roundCounter, scanner);
 
-                    if (farm.hasNoAnimals()) {
-                        System.out.println("Alle Tiere sind weg. Die Farmverwaltung wurde vorsorglich aufgelöst.");
-                        gameOver = true;
-                    }
+                    gameOver = checkGameOver();
+
                     GameStyle.pressEnterToContinue(scanner);
                     break;
 
@@ -161,41 +163,44 @@ public class Main {
                 case "6":
                     farm.sellResources();
 
+                    farm.hungerAllAnimals();
+
                     roundCounter = finishRound(roundCounter, scanner);
 
-                    if (farm.hasNoAnimals()) {
-                        System.out.println("Alle Tiere sind weg. Die Farmverwaltung wurde vorsorglich aufgelöst.");
-                        gameOver = true;
-                    }
+                    gameOver = checkGameOver();
+
                     GameStyle.pressEnterToContinue(scanner);
                     break;
 
                 // Ganze Tierart füttern
                 case "7":
-                    System.out.print("Welche Tierart möchtest du füttern? ");
+                    System.out.print("Für welche Tierart soll Gruppenversorgung beantragt werden? ");
                     String animalType = scanner.nextLine().toLowerCase().trim();
 
                     farm.feedAnimalsByType(animalType);
 
-                    roundCounter = finishRound(roundCounter, scanner);
+                    farm.hungerExceptType(animalType);
 
-                    if (farm.hasNoAnimals()) {
-                        System.out.println("Alle Tiere sind weg. Die Farmverwaltung wurde vorsorglich aufgelöst.");
-                        gameOver = true;
-                    }
+                    roundCounter = finishRound(roundCounter, scanner);
+                    gameOver = checkGameOver();
+
                     GameStyle.pressEnterToContinue(scanner);
                     break;
 
                 // Tiere ansehen
-                case "8":
-                    GameStyle.clearScreen();
-                    printGameHeader(roundCounter);
+                    case "8":
                     farm.printAnimals();
+
+                        gameOver = checkGameOver();
+
                     GameStyle.pressEnterToContinue(scanner);
                     break;
 
                 default:
-                    System.out.println("Ungültige Auswahl.");
+                    GameStyle.warning("Dieses Aktenzeichen existiert nicht.");
+                    System.out.println("Die Farmverwaltung prüft den Vorgang.");
+                    System.out.println("Ergebnis: Nein.");
+                    GameStyle.pressEnterToContinue(scanner);
                     break;
             }
         }
@@ -203,151 +208,217 @@ public class Main {
         scanner.close();
     }
 
-    // Gibt den oberen Bereich des Spiels aus
+    public static boolean checkGameOver() {
+
+        if (farm.hasNoAnimals()) {
+            GameStyle.warning("Das Tierregister ist leer.");
+            System.out.println("Alle Tiere sind weg. Die Farmverwaltung wurde vorsorglich aufgelöst.");
+            System.out.println("Der Abschlussbericht besteht nur aus Fragezeichen.");
+            return true;
+        }
+
+        return false;
+    }
+
     public static void printGameHeader(int roundCounter) {
 
         System.out.println();
         System.out.println(GameStyle.BRIGHT_GREEN + "╔════════════════════════════════════════════════════╗" + GameStyle.RESET);
         System.out.println(GameStyle.BRIGHT_GREEN + "║ "
-                + GameStyle.BRIGHT_YELLOW + farm.getFarmName()
+                + GameStyle.BRIGHT_YELLOW + "TIERDRAMA SIMULATOR"
                 + GameStyle.RESET);
         System.out.println(GameStyle.BRIGHT_GREEN + "╠════════════════════════════════════════════════════╣" + GameStyle.RESET);
         System.out.println(GameStyle.BRIGHT_GREEN + "║ "
-                + GameStyle.BRIGHT_CYAN + "Runde " + roundCounter
+                + GameStyle.BRIGHT_CYAN + farm.getFarmName()
+                + GameStyle.RESET);
+        System.out.println(GameStyle.BRIGHT_GREEN + "║ "
+                + GameStyle.BRIGHT_PURPLE + "Runde: "
+                + GameStyle.BRIGHT_WHITE + roundCounter
                 + GameStyle.BRIGHT_GREEN + "  │  "
-                + GameStyle.BRIGHT_YELLOW + "Geld: " + farm.getMoney() + " Münzen"
+                + GameStyle.BRIGHT_PURPLE + "Budget: "
+                + GameStyle.BRIGHT_WHITE + farm.getMoney() + " Münzen"
                 + GameStyle.RESET);
         System.out.println(GameStyle.BRIGHT_GREEN + "╚════════════════════════════════════════════════════╝" + GameStyle.RESET);
     }
 
-    // Gibt das Hauptmenü schön formatiert aus
     public static void printMenu() {
 
         System.out.println();
-        System.out.println(GameStyle.BRIGHT_BLUE + "╭─ AKTION WÄHLEN ──────────────────────────────" + GameStyle.RESET);
-        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_GREEN + "1" + GameStyle.RESET + "  Einzelnes Tier füttern");
-        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_GREEN + "2" + GameStyle.RESET + "  Neues Tier erstellen");
-        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_GREEN + "3" + GameStyle.RESET + "  Ressourcen einsammeln");
-        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_GREEN + "4" + GameStyle.RESET + "  Ressourcenlager ansehen");
-        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_GREEN + "5" + GameStyle.RESET + "  Tierärztin rufen");
-        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_GREEN + "6" + GameStyle.RESET + "  Ressourcen verkaufen");
-        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_GREEN + "7" + GameStyle.RESET + "  Ganze Tierart füttern");
-        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_CYAN + "8" + GameStyle.RESET + "  Tiere ansehen");
-        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_RED + "0" + GameStyle.RESET + "  Spiel beenden");
+        System.out.println(GameStyle.BRIGHT_BLUE + "╭─ AMTLICHES AKTIONSMENÜ ─────────────────────" + GameStyle.RESET);
+        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_GREEN + "1" + GameStyle.RESET + "  Versorgungsmaßnahme für ein Tier einleiten");
+        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_GREEN + "2" + GameStyle.RESET + "  Neue Tierakte anlegen");
+        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_GREEN + "3" + GameStyle.RESET + "  Ressourcensammlung durchführen");
+        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_GREEN + "4" + GameStyle.RESET + "  Ressourcenlager kontrollieren");
+        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_GREEN + "5" + GameStyle.RESET + "  Tierärztin mit Formular 12-T rufen");
+        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_GREEN + "6" + GameStyle.RESET + "  Verkaufsverfahren einleiten");
+        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_GREEN + "7" + GameStyle.RESET + "  Gruppenversorgungsmaßnahme beantragen");
+        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_CYAN + "8" + GameStyle.RESET + "  Tierregister einsehen");
+        System.out.println(GameStyle.BRIGHT_BLUE + "│ " + GameStyle.BRIGHT_RED + "0" + GameStyle.RESET + "  Farmverwaltung schließen");
         System.out.println(GameStyle.BRIGHT_BLUE + "╰──────────────────────────────────────────────" + GameStyle.RESET);
-        System.out.print(GameStyle.BRIGHT_YELLOW + "➜ Auswahl: " + GameStyle.RESET);
+        System.out.print(GameStyle.BRIGHT_YELLOW + "➜ Aktenzeichen deiner Entscheidung: " + GameStyle.RESET);
     }
 
-    // Erstellt ein neues Tier und fügt es der Farm hinzu
     public static void createAnimal(Scanner scanner) {
 
-        System.out.println();
-        System.out.println("==================================================");
-        System.out.println("              NEUES TIER ERSTELLEN");
-        System.out.println("==================================================");
+        GameStyle.logBox("TIERAKTE ANLEGEN");
 
-        // Tierart abfragen
-        System.out.print("Welche Tierart möchtest du erstellen? ");
+        System.out.println("Die Farmverwaltung eröffnet eine neue Tierakte.");
+        System.out.println("Bitte mache ehrliche Angaben.");
+        System.out.println("Das Tier wird später sowieso auffällig.");
+        System.out.println();
+
+        System.out.print(GameStyle.label("Tierart ") + "(schaf / kuh / huhn / ente): ");
         String animalType = scanner.nextLine().toLowerCase().trim();
 
-        // Prüfen, ob eine Tierart eingegeben wurde
         if (animalType.isBlank()) {
-            System.out.println("Ohne Tierart kann leider kein mysteriöses Farmwesen erstellt werden.");
+            GameStyle.warning("Ohne Tierart kann keine Akte eröffnet werden.");
+            System.out.println("Die Verwaltung stempelt traurig ins Leere.");
+            GameStyle.endBox();
             return;
         }
 
-        // Namen abfragen
-        System.out.print("Name: ");
+        if (!animalType.equals("schaf")
+                && !animalType.equals("kuh")
+                && !animalType.equals("huhn")
+                && !animalType.equals("ente")) {
+
+            GameStyle.warning("Diese Tierart ist im System nicht vorgesehen.");
+            System.out.println("Die Farmverwaltung akzeptiert aktuell nur:");
+            System.out.println("schaf, kuh, huhn oder ente.");
+            System.out.println("Alles andere wäre vermutlich ein DLC.");
+            GameStyle.endBox();
+            return;
+        }
+
+        System.out.print(GameStyle.label("Name: "));
         String name = scanner.nextLine().trim();
 
-        // Prüfen, ob ein Name eingegeben wurde
         if (name.isBlank()) {
-            System.out.println("Ein Tier ohne Namen? Sehr verdächtig. Tier wurde nicht erstellt.");
+            GameStyle.warning("Ein Tier ohne Namen kann nicht verwaltet werden.");
+            System.out.println("Die Akte wurde aus Gründen der bürokratischen Würde geschlossen.");
+            GameStyle.endBox();
             return;
         }
 
-        // Hunger und Alter mit Standardwerten einlesen
-        int hunger = readIntWithDefault(scanner, "Hunger", 50);
+        if (farm.animalNameExists(name)) {
+            GameStyle.warning("Dieser Name ist bereits im Tierregister vergeben.");
+            System.out.println("Die Farmverwaltung verweigert doppelte Aktenführung.");
+            System.out.println("Bitte eröffne eine neue Akte mit eindeutigem Namen.");
+            GameStyle.endBox();
+            return;
+        }
+
+        int hunger = readIntWithDefault(scanner, "Start-Hunger", 30);
         int age = readIntWithDefault(scanner, "Alter", 1);
 
-        // Neues Schaf erstellen
-        if (animalType.equals("schaf")) {
+        System.out.println();
 
-            // Wolle mit Standardwert 0 einlesen
-            int wool = readIntWithDefault(scanner, "Wolle", 0);
+        switch (animalType) {
 
-            farm.addAnimal(new Sheep(name, hunger, age, wool));
-            GameStyle.success(name + " wurde als Schaf erstellt.");
+            case "schaf":
+                int wool = readIntWithDefault(scanner, "Start-Wolle", 0);
 
-            // Neue Kuh erstellen
-        } else if (animalType.equals("kuh")) {
+                Sheep sheep = new Sheep(name, hunger, age, wool);
+                farm.addAnimal(sheep);
 
-            // Milch mit Standardwert 0 einlesen
-            int milk = readIntWithDefault(scanner, "Milch", 0);
+                printAnimalCreatedMessage(name, "Schaf", "Wolle", wool);
+                break;
 
-            farm.addAnimal(new Cow(name, hunger, age, milk));
-            GameStyle.success(name + " wurde als Kuh erstellt.");
+            case "kuh":
+                int milk = readIntWithDefault(scanner, "Start-Milch", 0);
 
-            // Neues Huhn erstellen
-        } else if (animalType.equals("huhn")) {
+                Cow cow = new Cow(name, hunger, age, milk);
+                farm.addAnimal(cow);
 
-            // Eier mit Standardwert 0 einlesen
-            int eggs = readIntWithDefault(scanner, "Eier", 0);
+                printAnimalCreatedMessage(name, "Kuh", "Milch", milk);
+                break;
 
-            farm.addAnimal(new Chicken(name, hunger, age, eggs));
-            GameStyle.success(name + " wurde als Huhn erstellt.");
+            case "huhn":
+                int eggs = readIntWithDefault(scanner, "Start-Eier", 0);
 
-            // Neue Ente erstellen
-        } else if (animalType.equals("ente")) {
+                Chicken chicken = new Chicken(name, hunger, age, eggs);
+                farm.addAnimal(chicken);
 
-            // Federn mit Standardwert 0 einlesen
-            int feathers = readIntWithDefault(scanner, "Federn", 0);
+                printAnimalCreatedMessage(name, "Huhn", "Eier", eggs);
+                break;
 
-            farm.addAnimal(new Duck(name, hunger, age, feathers));
-            GameStyle.success(name + " wurde als Ente erstellt.");
+            case "ente":
+                int feathers = readIntWithDefault(scanner, "Start-Federn", 0);
 
-            // Wenn keine passende Tierart eingegeben wurde
-        } else {
-            System.out.println("Diese Tierart gibt es nicht.");
+                Duck duck = new Duck(name, hunger, age, feathers);
+                farm.addAnimal(duck);
+
+                printAnimalCreatedMessage(name, "Ente", "Federn", feathers);
+                break;
         }
+
+        GameStyle.endBox();
     }
 
-    // Liest eine Zahl ein.
-    // Wenn der User nichts eingibt, wird ein Standardwert verwendet.
+    public static void printAnimalCreatedMessage(String name, String animalType, String resourceName, int resourceAmount) {
+
+        System.out.println();
+        System.out.println(GameStyle.BRIGHT_GREEN + "✓ Tierakte wurde erfolgreich angelegt." + GameStyle.RESET);
+
+        System.out.println(GameStyle.label("Name: ")
+                + name);
+
+        System.out.println(GameStyle.label("Tierart: ")
+                + animalType);
+
+        System.out.println(GameStyle.label("Erfasste Ressource: ")
+                + resourceAmount
+                + " "
+                + resourceName);
+
+        System.out.println();
+
+        System.out.println(name + " wurde ins Tierregister aufgenommen.");
+        System.out.println("Die Farmverwaltung übernimmt keine Verantwortung für spätere Persönlichkeitsentwicklung.");
+    }
+
     public static int readIntWithDefault(Scanner scanner, String text, int defaultValue) {
 
-        System.out.print(text + " [" + defaultValue + "]: ");
+        System.out.print(GameStyle.label(text + " [" + defaultValue + "]: "));
 
         String input = scanner.nextLine().trim();
 
         if (input.isBlank()) {
+            System.out.println("Keine Angabe. Die Verwaltung nimmt einfach " + defaultValue + ".");
             return defaultValue;
         }
 
-        return Integer.parseInt(input);
+        try {
+            return Integer.parseInt(input);
+
+        } catch (NumberFormatException exception) {
+            System.out.println("Diese Eingabe war keine Zahl.");
+            System.out.println("Die Farmverwaltung ignoriert das und nimmt " + defaultValue + ".");
+            return defaultValue;
+        }
     }
 
-    // Entscheidet anhand des Hungerwertes, ob gefüttert werden soll
     public static boolean isHungry(int animalHunger, Scanner scanner) {
 
         if (animalHunger >= 75) {
-            System.out.println("Das Tier wird gefüttert.");
+            GameStyle.info("Die Versorgungslage ist kritisch. Maßnahme wird eingeleitet.");
             return true;
 
         } else if (animalHunger >= 50) {
-            System.out.print("Das Tier ist mäßig hungrig. Möchtest du es füttern? ");
+            System.out.print(GameStyle.label("Die Lage ist mittelmäßig dramatisch. Trotzdem füttern? "));
             String answer = scanner.nextLine().toLowerCase().trim();
 
             if (answer.equals("ja")) {
-                System.out.println("Das Tier wird gefüttert.");
+                GameStyle.info("Versorgungsmaßnahme wurde genehmigt.");
                 return true;
             } else {
-                System.out.println("Das Tier wird nicht gefüttert.");
+                GameStyle.info("Versorgungsmaßnahme wurde vertagt. Das Tier merkt sich das.");
                 return false;
             }
 
         } else {
-            System.out.println("Das Tier ist nicht hungrig genug.");
+            GameStyle.info("Das Tier ist laut Aktenlage nicht hungrig genug.");
+            System.out.println("Die Farmverwaltung spart Futter und nennt es Strategie.");
             return false;
         }
     }
@@ -357,19 +428,26 @@ public class Main {
 
         roundCounter = roundCounter + 1;
 
-        System.out.println();
-        System.out.println("--------------------------------------------------");
-        System.out.println("Runde " + roundCounter + " wurde überlebt.");
+        GameStyle.logBox("RUNDENENDE");
+
+        System.out.println(GameStyle.label("Runde: ")
+                + roundCounter
+                + " wurde überlebt.");
 
         if (roundCounter % 3 == 0) {
             farm.increaseAge();
-            System.out.println("Alle Tiere sind älter geworden. Niemand wurde gefragt.");
+
+            System.out.println(GameStyle.label("Alterung: ")
+                    + "Alle Tiere sind älter geworden. Niemand wurde gefragt.");
         }
 
-        System.out.println("--------------------------------------------------");
+        GameStyle.endBox();
 
         return roundCounter;
     }
+
+
+
 
     // Schließt eine Runde ab
     public static int finishRound(int roundCounter, Scanner scanner) {
@@ -389,5 +467,22 @@ public class Main {
         farm.removeDeadAnimals();
 
         return roundCounter;
+    }
+
+
+
+
+    public static String readMenuChoice(Scanner scanner) {
+
+        String choice = scanner.nextLine().trim();
+
+        // Leere Eingaben ignorieren
+        while (choice.isBlank()) {
+            GameStyle.info("Kein Aktenzeichen eingegeben. Die Verwaltung wartet weiter.");
+            System.out.print(GameStyle.BRIGHT_YELLOW + "➜ Aktenzeichen deiner Entscheidung: " + GameStyle.RESET);
+            choice = scanner.nextLine().trim();
+        }
+
+        return choice;
     }
 }

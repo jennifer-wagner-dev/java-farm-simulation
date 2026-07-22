@@ -27,21 +27,6 @@ public class GameStyle {
         return color + text + RESET;
     }
 
-    // Gibt eine Leerzeile aus
-    public static void emptyLine() {
-        System.out.println();
-    }
-
-    // Gibt eine Trennlinie aus
-    public static void line() {
-        System.out.println(BRIGHT_GREEN + "════════════════════════════════════════════════════════════" + RESET);
-    }
-
-    // Gibt eine kleinere Trennlinie aus
-    public static void smallLine() {
-        System.out.println(GREEN + "------------------------------------------------------------" + RESET);
-    }
-
     // Gibt einen Titel in einer Box aus
     public static void titleBox(String title) {
         System.out.println();
@@ -53,11 +38,6 @@ public class GameStyle {
     // Gibt eine Warnung aus
     public static void warning(String text) {
         System.out.println(BRIGHT_RED + "⚠ " + text + RESET);
-    }
-
-    // Gibt eine Erfolgsmeldung aus
-    public static void success(String text) {
-        System.out.println(BRIGHT_GREEN + "✓ " + text + RESET);
     }
 
     // Gibt eine Info aus
@@ -79,8 +59,8 @@ public class GameStyle {
         System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^");
         System.out.println(RESET);
 
-        System.out.println(BRIGHT_YELLOW + "        TIERDRAMA SIMULATOR" + RESET);
-        System.out.println(GREEN + "   ein Managementspiel über Heu, Hoffnung und Kontrollverlust" + RESET);
+        System.out.println(BRIGHT_YELLOW + "TIERDRAMA SIMULATOR" + RESET);
+        System.out.println(GREEN + "ein Managementspiel über Heu, Hoffnung und Kontrollverlust" + RESET);
         System.out.println();
     }
 
@@ -113,15 +93,26 @@ public class GameStyle {
 
     // Gibt farbigen Hunger-Status zurück
     public static String getHungerBar(int hunger) {
-        String bar = "";
 
-        int filledParts = hunger / 10;
+        StringBuilder bar = new StringBuilder();
+
+        int shownHunger = hunger;
+
+        if (shownHunger < 0) {
+            shownHunger = 0;
+        }
+
+        if (shownHunger > 100) {
+            shownHunger = 100;
+        }
+
+        int filledParts = shownHunger / 10;
 
         for (int i = 0; i < 10; i++) {
             if (i < filledParts) {
-                bar = bar + "█";
+                bar.append("█");
             } else {
-                bar = bar + "░";
+                bar.append("░");
             }
         }
 
@@ -135,25 +126,16 @@ public class GameStyle {
     }
 
     // Versucht die Konsole zu leeren.
-    // In IntelliJ klappt das manchmal nicht perfekt, aber im Terminal meist schon.
     public static void clearScreen() {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
 
-    // Wartet, bis der User Enter drückt
+    // Warten bis der User Enter drückt
     public static void pressEnterToContinue(java.util.Scanner scanner) {
         System.out.println();
         System.out.print(BRIGHT_CYAN + "Drücke Enter, um fortzufahren..." + RESET);
         scanner.nextLine();
-    }
-
-    // Kleiner Screen-Titel
-    public static void screenTitle(String title) {
-        System.out.println();
-        System.out.println(BRIGHT_GREEN + "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" + RESET);
-        System.out.println(BRIGHT_YELLOW + "  " + title + RESET);
-        System.out.println(BRIGHT_GREEN + "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" + RESET);
     }
 
     // Farbiges Label

@@ -18,7 +18,7 @@ public class Farm {
     private String farmName;
 
     // Liste, in der beliebig viele Tiere gespeichert werden können
-    private List<Animal> animals;
+    private final List<Animal> animals;
 
     // Lager für eingesammelte Ressourcen
     private int storedWool;
@@ -58,16 +58,6 @@ public class Farm {
         this.farmName = farmName;
     }
 
-    // Gibt die Tierliste zurück
-    public List<Animal> getAnimals() {
-        return animals;
-    }
-
-    // Setzt die Tierliste
-    public void setAnimals(List<Animal> animals) {
-        this.animals = animals;
-    }
-
     // Gibt das aktuelle Geld der Farm zurück
     public int getMoney() {
         return money;
@@ -78,439 +68,549 @@ public class Farm {
         animals.add(animal);
     }
 
-    // Gibt alle Tiere optisch schöner aus
+    // Gibt alle Tiere auf der Farm aus
     public void printAnimals() {
 
         if (animals.isEmpty()) {
-            GameStyle.warning("Es gibt keine Tiere mehr auf der Farm.");
+            GameStyle.logBox("TIERREGISTER");
+            GameStyle.warning("Das Tierregister ist leer.");
+            System.out.println("Die Farmverwaltung schaut betreten auf die leere Akte.");
+            System.out.println("Niemand muht. Niemand quakt. Es ist unangenehm ruhig.");
+            GameStyle.endBox();
             return;
         }
 
-        GameStyle.titleBox("TIERE AUF DER FARM");
+        GameStyle.logBox("TIERREGISTER");
+
+        System.out.println("Die Farmverwaltung öffnet das Tierregister.");
+        System.out.println("Alle Tiere wurden amtlich erfasst. Widerstand war zwecklos.");
+        System.out.println();
 
         for (Animal animal : animals) {
 
             String animalSymbol = "❓";
+            String animalType = "Unbekanntes Wesen";
             String resourceText = "";
 
-            if (animal instanceof Sheep) {
-                Sheep sheep = (Sheep) animal;
+            if (animal instanceof Sheep sheep) {
                 animalSymbol = "🐑";
+                animalType = "Schaf";
                 resourceText = "Wolle: " + sheep.getWool();
 
-            } else if (animal instanceof Cow) {
-                Cow cow = (Cow) animal;
+            } else if (animal instanceof Cow cow) {
                 animalSymbol = "🐄";
+                animalType = "Kuh";
                 resourceText = "Milch: " + cow.getMilk();
 
-            } else if (animal instanceof Chicken) {
-                Chicken chicken = (Chicken) animal;
+            } else if (animal instanceof Chicken chicken) {
                 animalSymbol = "🐔";
+                animalType = "Huhn";
                 resourceText = "Eier: " + chicken.getEggs();
 
-            } else if (animal instanceof Duck) {
-                Duck duck = (Duck) animal;
+            } else if (animal instanceof Duck duck) {
                 animalSymbol = "🦆";
+                animalType = "Ente";
                 resourceText = "Federn: " + duck.getFeathers();
             }
 
-            String statusText;
-
-            if (animal.isSick()) {
-                statusText = GameStyle.BRIGHT_RED
-                        + "krank | "
-                        + animal.getDiseaseName()
-                        + " | seit "
-                        + animal.getSickRounds()
-                        + " Runden"
-                        + GameStyle.RESET;
-            } else {
-                statusText = GameStyle.BRIGHT_GREEN + "gesund" + GameStyle.RESET;
-            }
-
-            System.out.println(GameStyle.GREEN + "╭─ "
-                    + GameStyle.BRIGHT_YELLOW + animalSymbol + "  " + animal.getName()
-                    + GameStyle.GREEN + " ─────────────────────────────────────"
+            System.out.println(GameStyle.BRIGHT_PURPLE
+                    + "├─ AKTE: "
+                    + animalSymbol
+                    + " "
+                    + animal.getName()
                     + GameStyle.RESET);
 
-            System.out.println(GameStyle.GREEN + "│ " + GameStyle.RESET
-                    + "Alter:          " + GameStyle.BRIGHT_CYAN + animal.getAge() + GameStyle.RESET);
+            System.out.println(GameStyle.label("│ Tierart: ")
+                    + animalType);
 
-            System.out.println(GameStyle.GREEN + "│ " + GameStyle.RESET
-                    + "Hunger:         " + GameStyle.getHungerBar(animal.getHunger()));
+            System.out.println(GameStyle.label("│ Alter: ")
+                    + animal.getAge()
+                    + " Jahre");
 
-            System.out.println(GameStyle.GREEN + "│ " + GameStyle.RESET
-                    + "Persönlichkeit: "
+            System.out.println(GameStyle.label("│ Hunger: ")
+                    + GameStyle.getHungerBar(animal.getHunger()));
+
+            System.out.println(GameStyle.label("│ Persönlichkeit: ")
                     + getPersonalityIcon(animal)
                     + " "
                     + GameStyle.BRIGHT_PURPLE
                     + animal.getPersonality()
                     + GameStyle.RESET);
 
-            System.out.println(GameStyle.GREEN + "│ " + GameStyle.RESET
-                    + "Status:         " + statusText);
+            if (animal.isSick()) {
+                System.out.println(GameStyle.label("│ Gesundheitsstatus: ")
+                        + GameStyle.BRIGHT_RED
+                        + "krank"
+                        + GameStyle.RESET);
 
-            System.out.println(GameStyle.GREEN + "│ " + GameStyle.RESET
-                    + "Ressource:      "
+                System.out.println(GameStyle.label("│ Diagnose: ")
+                        + GameStyle.BRIGHT_RED
+                        + animal.getDiseaseName()
+                        + GameStyle.RESET);
+
+                System.out.println(GameStyle.label("│ Krank seit: ")
+                        + animal.getSickRounds()
+                        + " Runden");
+
+            } else {
+                System.out.println(GameStyle.label("│ Gesundheitsstatus: ")
+                        + GameStyle.BRIGHT_GREEN
+                        + "gesund"
+                        + GameStyle.RESET);
+            }
+
+            System.out.println(GameStyle.label("│ Ressource: ")
                     + GameStyle.BRIGHT_YELLOW
                     + resourceText
                     + GameStyle.RESET);
 
-            System.out.println(GameStyle.GREEN + "╰──────────────────────────────────────────────" + GameStyle.RESET);
+            System.out.println(GameStyle.label("│ Aktennotiz: ")
+                    + getAnimalFileNote(animal));
+
             System.out.println();
+        }
+
+        System.out.println("Das Tierregister wurde geschlossen.");
+        System.out.println("Mehr Ordnung wäre möglich, aber unrealistisch.");
+
+        GameStyle.endBox();
+    }
+
+    // Gibt eine kleine Aktennotiz passend zur Persönlichkeit zurück
+    public String getAnimalFileNote(Animal animal) {
+
+        String personality = animal.getPersonality();
+
+        switch (personality) {
+            case "dramatisch":
+                return "🎭";
+
+            case "gierig":
+                return "💸";
+
+            case "schüchtern":
+                return "🫣";
+
+            case "chaotisch":
+                return "🌀";
+
+            case "verwöhnt":
+                return "👑";
+
+            default:
+                return "❓";
         }
     }
 
-    // Sucht ein Tier über seinen Namen
+    // Sucht ein Tier anhand seines Namens
     public Animal getAnimalByName(String name) {
 
-        // Leerzeichen am Anfang und Ende entfernen
-        String searchedName = name.trim();
-
-        // Alle Tiere durchsuchen
+        // Alle Tiere in der Liste durchgehen
         for (Animal animal : animals) {
 
-            // Groß- und Kleinschreibung ist egal
-            if (animal.getName().equalsIgnoreCase(searchedName)) {
+            // Namen vergleichen
+            // equalsIgnoreCase bedeutet: Groß- und Kleinschreibung ist egal
+            if (animal.getName().equalsIgnoreCase(name.trim())) {
                 return animal;
             }
         }
 
         // Wenn kein Tier gefunden wurde
-        GameStyle.warning("Dieses Tier existiert laut Farmverwaltung nicht. Verdächtig.");
+        GameStyle.warning("Dieses Tier existiert laut Farmverwaltung nicht.");
+        System.out.println("Die Akte wurde nicht gefunden.");
+        System.out.println("Das ist entweder ein Eingabefehler oder ein sehr gutes Versteck.");
+
         return null;
     }
 
-    // Füttert ein einzelnes Tier, wenn genug Geld für Futter vorhanden ist
+    // Prüft, ob ein Tiername bereits existiert
+    public boolean animalNameExists(String name) {
+
+        for (Animal animal : animals) {
+            if (animal.getName().equalsIgnoreCase(name.trim())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Prüft, ob ein Tier zu einer bestimmten Tierart gehört
+    public boolean matchesAnimalType(Animal animal, String animalType) {
+
+        switch (animalType) {
+            case "schaf":
+                return animal instanceof Sheep;
+
+            case "kuh":
+                return animal instanceof Cow;
+
+            case "huhn":
+                return animal instanceof Chicken;
+
+            case "ente":
+                return animal instanceof Duck;
+
+            default:
+                return false;
+        }
+    }
+
+    // Füttert ein einzelnes Tier
     public boolean feedAnimal(Animal animal) {
 
-        // Futterkosten hängen von der Persönlichkeit ab
+        GameStyle.logBox("VERSORGUNGSMASSNAHME");
+
         int feedCost = getFeedCost(animal);
 
-        GameStyle.logBox("FÜTTERUNG");
-
-        System.out.println(GameStyle.label("Tier: ") + animal.getName());
-        System.out.println(GameStyle.label("Persönlichkeit: ")
+        System.out.println(GameStyle.label("Tier: ")
+                + animal.getName()
+                + " "
                 + getPersonalityIcon(animal)
                 + " "
-                + animal.getPersonality());
+                + GameStyle.BRIGHT_PURPLE
+                + animal.getPersonality()
+                + GameStyle.RESET);
 
-        // Prüfen, ob genug Geld vorhanden ist
+        System.out.println(GameStyle.label("Futterkosten: ")
+                + feedCost
+                + " Münzen");
+
+        System.out.println(GameStyle.label("Budgetstatus: ")
+                + GameStyle.money(money));
+
+        System.out.println();
+
         if (money < feedCost) {
-            GameStyle.warning("Du hast nicht genug Geld für Futter.");
-            System.out.println(GameStyle.label("Benötigt: ") + feedCost + " Münzen");
-            System.out.println(GameStyle.label("Vorhanden: ") + GameStyle.money(money));
-            System.out.println("Die Tiere schauen dich enttäuscht an.");
+            GameStyle.warning("Die Versorgung wurde vom Budget abgelehnt.");
+            System.out.println("Das Tier schaut dich an wie eine unbezahlte Rechnung.");
+            System.out.println("Die Farmverwaltung empfiehlt: weniger Armut, mehr Münzen.");
             GameStyle.endBox();
-
-            // false bedeutet: Das Tier konnte nicht gefüttert werden
             return false;
         }
 
-        // Hunger vor dem Füttern speichern
         int hungerBefore = animal.getHunger();
 
-        // Geld für das Futter abziehen
         money = money - feedCost;
-
-        // Das Tier wird gefüttert
         animal.feed();
 
-        // Persönlichkeitseffekt nach dem Füttern anwenden
         String personalityEffect = applyPersonalityAfterFeeding(animal);
 
-        // Hunger nach dem Füttern speichern
-        int hungerAfter = animal.getHunger();
+        System.out.println(GameStyle.BRIGHT_GREEN + "✓ Versorgung durchgeführt." + GameStyle.RESET);
 
-        System.out.println(GameStyle.label("Aktion: ") + getRandomFeedMessage(animal));
-        System.out.println(GameStyle.label("Hunger vorher: ") + GameStyle.getHungerBar(hungerBefore));
-        System.out.println(GameStyle.label("Hunger nachher: ") + GameStyle.getHungerBar(hungerAfter));
-        System.out.println(GameStyle.label("Kosten: ") + feedCost + " Münzen");
-        System.out.println(GameStyle.label("Geld: ") + GameStyle.money(money));
+        System.out.println(GameStyle.label("Hunger vorher: ")
+                + GameStyle.getHungerBar(hungerBefore));
+
+        System.out.println(GameStyle.label("Hunger nachher:  ")
+                + GameStyle.getHungerBar(animal.getHunger()));
+
+        System.out.println(GameStyle.label("Budgetstatus: ")
+                + GameStyle.money(money));
+
+        if (!personalityEffect.isBlank()) {
+            System.out.println();
+            System.out.println(personalityEffect);
+        }
 
         GameStyle.endBox();
 
-        // true bedeutet: Das Tier wurde erfolgreich gefüttert
         return true;
     }
 
-    // Gibt einen lustigen Fütterungs-Spruch zurück,
-    // abhängig von der Persönlichkeit des Tieres
-    public String getRandomFeedMessage(Animal animal) {
-
-        // Persönlichkeit des Tieres holen
-        String personality = animal.getPersonality();
-
-        if (personality.equals("dramatisch")) {
-            return animal.getName() + " seufzt dramatisch und frisst, als wäre es eine Filmszene.";
-
-        } else if (personality.equals("gierig")) {
-            return animal.getName() + " inhaliert das Futter, bevor jemand blinzeln kann.";
-
-        } else if (personality.equals("schüchtern")) {
-            return animal.getName() + " nimmt das Futter vorsichtig und tut so, als wäre nichts passiert.";
-
-        } else if (personality.equals("chaotisch")) {
-            return animal.getName() + " verteilt erst die Hälfte des Futters und frisst dann den Rest.";
-
-        } else if (personality.equals("verwöhnt")) {
-            return animal.getName() + " akzeptiert das Futter nur unter Protest.";
-
-        } else {
-            return animal.getName() + " wurde gefüttert.";
-        }
-    }
-
-    // Gibt passend zur Persönlichkeit ein Icon zurück
+    // Gibt ein Icon passend zur Persönlichkeit zurück
     public String getPersonalityIcon(Animal animal) {
 
-        // Persönlichkeit des Tieres holen
         String personality = animal.getPersonality();
 
-        if (personality.equals("dramatisch")) {
-            return "🎭";
-        } else if (personality.equals("gierig")) {
-            return "🍽️";
-        } else if (personality.equals("schüchtern")) {
-            return "🫣";
-        } else if (personality.equals("chaotisch")) {
-            return "🌪️";
-        } else if (personality.equals("verwöhnt")) {
-            return "👑";
-        } else {
-            return "✨";
+        switch (personality) {
+            case "dramatisch":
+                return "🎭";
+
+            case "gierig":
+                return "💸";
+
+            case "schüchtern":
+                return "🫣";
+
+            case "chaotisch":
+                return "🌀";
+
+            case "verwöhnt":
+                return "👑";
+
+            default:
+                return "❓";
         }
     }
 
-    // Gibt zurück, wie viel das Füttern kostet.
-    // Verwöhnte Tiere kosten mehr, weil sie natürlich Spezialfutter wollen.
+// Gibt zurück, wie viel das Füttern kostet
     public int getFeedCost(Animal animal) {
 
-        int feedCost = 5;
+        int feedCost = 6;
+
+        if (animal instanceof Cow) {
+            feedCost = 8;
+
+        } else if (animal instanceof Sheep) {
+            feedCost = 7;
+
+        } else if (animal instanceof Chicken) {
+            feedCost = 4;
+
+        } else if (animal instanceof Duck) {
+            feedCost = 5;
+        }
 
         if (animal.getPersonality().equals("verwöhnt")) {
-            feedCost = 8;
+            feedCost = feedCost + 3;
         }
 
         return feedCost;
     }
 
-    // Wendet nach dem Füttern einen kleinen Effekt an,
-// abhängig von der Persönlichkeit des Tieres.
-// Die Methode gibt den Effekt als Text zurück.
-// Wendet nach dem Füttern einen kleinen Effekt an,
-// abhängig von der Persönlichkeit des Tieres.
-// Die Methode gibt den Effekt als Text zurück.
+    // Erhöht den Hunger aller Tiere
+    public void hungerAllAnimals() {
+
+        for (Animal animal : animals) {
+            animal.hunger();
+        }
+    }
+
+    // Erhöht den Hunger aller Tiere außer der gefütterten Tierart
+    public void hungerExceptType(String animalType) {
+
+        for (Animal animal : animals) {
+
+            boolean isFedType =
+                    (animalType.equals("schaf") && animal instanceof Sheep)
+                            || (animalType.equals("kuh") && animal instanceof Cow)
+                            || (animalType.equals("huhn") && animal instanceof Chicken)
+                            || (animalType.equals("ente") && animal instanceof Duck);
+
+            if (!isFedType) {
+                animal.hunger();
+            }
+        }
+    }
+
+    // Persönlichkeit beeinflusst manchmal das Verhalten nach dem Füttern
     public String applyPersonalityAfterFeeding(Animal animal) {
 
-        // Persönlichkeit des Tieres holen
         String personality = animal.getPersonality();
 
         if (personality.equals("gierig")) {
-
-            // Gierige Tiere profitieren stärker vom Futter
-            animal.setHunger(animal.getHunger() - 5);
-
-            // Hunger soll nicht unter 0 fallen
-            if (animal.getHunger() < 0) {
-                animal.setHunger(0);
-            }
-
-            return animal.getName() + " hat noch Nachschlag gefunden. Hunger zusätzlich -5.";
-
-        } else if (personality.equals("chaotisch")) {
-
-            // Chaotische Tiere haben einen zufälligen Effekt
             int randomNumber = (int) (Math.random() * 2) + 1;
 
             if (randomNumber == 1) {
+                animal.setHunger(animal.getHunger() + 5);
 
-                // Glücklicher chaotischer Effekt
-                animal.setHunger(animal.getHunger() - 10);
+                return animal.getName()
+                        + " ist gierig und meldet direkt Nachschlag an.\n"
+                        + "Die Farmverwaltung nimmt das unter Protest zur Kenntnis.";
+            }
+
+        } else if (personality.equals("verwöhnt")) {
+            int randomNumber = (int) (Math.random() * 2) + 1;
+
+            if (randomNumber == 1) {
+                animal.setHunger(animal.getHunger() + 5);
+
+                return animal.getName()
+                        + " findet das Futter mittelmäßig.\n"
+                        + "Eine Bewertung mit zwei Sternen wurde angedroht.";
+            }
+
+        } else if (personality.equals("dramatisch")) {
+            int randomNumber = (int) (Math.random() * 2) + 1;
+
+            if (randomNumber == 1) {
+                return animal.getName()
+                        + " frisst, als wäre es die letzte Szene einer Netflix-Serie.";
+            }
+
+        } else if (personality.equals("chaotisch")) {
+            int randomNumber = (int) (Math.random() * 2) + 1;
+
+            if (randomNumber == 1) {
+                animal.setHunger(animal.getHunger() - 5);
 
                 if (animal.getHunger() < 0) {
                     animal.setHunger(0);
                 }
 
-                return animal.getName() + " hat das Futter überraschend effizient genutzt. Hunger zusätzlich -10.";
-
-            } else {
-
-                // Ungünstiger chaotischer Effekt
-                animal.setHunger(animal.getHunger() + 5);
-
-                return animal.getName() + " hat die Hälfte des Futters verschüttet. Hunger wieder +5.";
+                return animal.getName()
+                        + " hat aus Versehen effizient gegessen.\n"
+                        + "Niemand weiß, wie das passieren konnte.";
             }
 
-        } else if (personality.equals("dramatisch")) {
-
-            // Dramatische Tiere ändern keine Werte, machen aber Drama
-            return animal.getName() + " tut so, als hätte diese Mahlzeit das eigene Leben verändert.";
-
         } else if (personality.equals("schüchtern")) {
+            int randomNumber = (int) (Math.random() * 2) + 1;
 
-            // Schüchterne Tiere ändern keine Werte
-            return animal.getName() + " frisst heimlich, aber dankbar.";
-
-        } else if (personality.equals("verwöhnt")) {
-
-            // Verwöhnte Tiere ändern hier keine Werte,
-            // kosten aber durch getFeedCost() mehr beim Füttern
-            return animal.getName() + " akzeptiert das Futter, möchte aber nächstes Mal Bio-Heu.";
-
-        } else {
-            return animal.getName() + " frisst ganz normal. Verdächtig normal.";
+            if (randomNumber == 1) {
+                return animal.getName()
+                        + " frisst leise in der Ecke und möchte nicht darüber sprechen.";
+            }
         }
+
+        return "";
     }
 
-    // Gibt einen lustigen Krankheits-Spruch zurück,
-    // abhängig von der Persönlichkeit des Tieres
+    // Gibt einen passenden Text zur Krankheit zurück
     public String getDiseaseMessage(Animal animal) {
 
-        // Persönlichkeit des Tieres holen
-        String personality = animal.getPersonality();
+        String diseaseName = animal.getDiseaseName();
 
-        if (personality.equals("dramatisch")) {
-            return animal.getName() + " liegt theatralisch herum. Diagnose: " + animal.getDiseaseName() + ".";
+        if (diseaseName.equals("Männerschnupfen")) {
+            return animal.getName()
+                    + " leidet sichtbar und möchte dafür bitte eine Bühne.\n"
+                    + "Die Symptome sind laut, aber medizinisch schwer beleidigt.";
 
-        } else if (personality.equals("gierig")) {
-            return animal.getName() + " ist krank, fragt aber trotzdem nach Snacks. Diagnose: " + animal.getDiseaseName() + ".";
+        } else if (diseaseName.equals("akute Dramaitis")) {
+            return animal.getName()
+                    + " hat akute Dramaitis.\n"
+                    + "Jede Bewegung wird als emotionaler Wendepunkt inszeniert.";
 
-        } else if (personality.equals("schüchtern")) {
-            return animal.getName() + " ist leise krank geworden. Diagnose: " + animal.getDiseaseName() + ".";
+        } else if (diseaseName.equals("Flauschfieber")) {
+            return animal.getName()
+                    + " hat Flauschfieber.\n"
+                    + "Die Felllage ist weich, aber organisatorisch bedenklich.";
 
-        } else if (personality.equals("chaotisch")) {
-            return animal.getName() + " ist irgendwie krank geworden. Niemand weiß genau wie. Diagnose: " + animal.getDiseaseName() + ".";
+        } else if (diseaseName.equals("Milch-Melancholie")) {
+            return animal.getName()
+                    + " wurde von Milch-Melancholie erfasst.\n"
+                    + "Die Stimmung ist pasteurisiert, aber instabil.";
 
-        } else if (personality.equals("verwöhnt")) {
-            return animal.getName() + " verlangt eine Wärmflasche und Premium-Heu. Diagnose: " + animal.getDiseaseName() + ".";
+        } else if (diseaseName.equals("Eier-Existenzkrise")) {
+            return animal.getName()
+                    + " befindet sich in einer Eier-Existenzkrise.\n"
+                    + "Die Frage \"Was war zuerst?\" wurde offiziell untersagt.";
+
+        } else if (diseaseName.equals("quakende Quarantäne")) {
+            return animal.getName()
+                    + " wurde in quakende Quarantäne eingestuft.\n"
+                    + "Das Geräuschlevel ist meldepflichtig.";
 
         } else {
-            return animal.getName() + " ist krank geworden. Diagnose: " + animal.getDiseaseName() + ".";
+            return animal.getName()
+                    + " hat eine unbekannte Erkrankung.\n"
+                    + "Die Farmverwaltung nennt es vorsichtig \"irgendwas mit Tier\".";
         }
     }
 
-    // Gibt einen lustigen Spruch nach der Behandlung zurück,
-    // abhängig von der Persönlichkeit des Tieres
+    // Gibt einen kurzen Behandlungstext zurück
     public String getTreatmentMessage(Animal animal) {
 
-        // Persönlichkeit des Tieres holen
-        String personality = animal.getPersonality();
+        String diseaseName = animal.getDiseaseName();
 
-        if (personality.equals("dramatisch")) {
-            return animal.getName() + " verlässt die Behandlung wie nach einem Oscar-würdigen Krankenhausdrama.";
+        switch (diseaseName) {
+            case "Männerschnupfen":
+                return animal.getName() + " bekommt Tee, Decke und maximale Aufmerksamkeit.";
 
-        } else if (personality.equals("gierig")) {
-            return animal.getName() + " ist geheilt und fragt sofort, ob es im Wartezimmer Snacks gibt.";
+            case "akute Dramaitis":
+                return animal.getName() + " bekommt eine Notfallration Realität.";
 
-        } else if (personality.equals("schüchtern")) {
-            return animal.getName() + " wurde behandelt und bedankt sich sehr leise.";
+            case "Flauschfieber":
+                return animal.getName() + " wird durchgekämmt. Die Flauschlage ist stabil.";
 
-        } else if (personality.equals("chaotisch")) {
-            return animal.getName() + " wurde behandelt. Die Tierärztin braucht jetzt erstmal Urlaub.";
+            case "Milch-Melancholie":
+                return animal.getName() + " bekommt Zuspruch und Kalzium.";
 
-        } else if (personality.equals("verwöhnt")) {
-            return animal.getName() + " wurde behandelt und bewertet die Tierärztin mit 3 von 5 Sternen.";
+            case "Eier-Existenzkrise":
+                return animal.getName() + " bekommt eine kurze Identitätsberatung.";
 
-        } else {
-            return animal.getName() + " wurde behandelt und ist wieder gesund.";
+            case "quakende Quarantäne":
+                return animal.getName() + " wird aus der Quarantäne entlassen. Leider hörbar.";
+
+            default:
+                return animal.getName() + " bekommt eine Standardbehandlung nach Farmprotokoll 404.";
         }
     }
 
     // Füttert alle Tiere einer bestimmten Tierart
     public void feedAnimalsByType(String animalType) {
 
+        GameStyle.logBox("GRUPPENVERSORGUNG");
+
         int totalCost = 0;
-        int animalCount = 0;
+        int fedAnimals = 0;
 
-        GameStyle.logBox("GRUPPENFÜTTERUNG");
-
-        System.out.println(GameStyle.label("Tierart: ") + animalType);
-
-        // Zuerst zählen wir, wie viele Tiere zu der eingegebenen Tierart passen
+        // Erst berechnen, wie teuer die Gruppenfütterung wäre
         for (Animal animal : animals) {
 
-            if (animalType.equals("schaf") && animal instanceof Sheep) {
-                animalCount = animalCount + 1;
-                totalCost = totalCost + getFeedCost(animal);
+            boolean matchesType = matchesAnimalType(animal, animalType);
 
-            } else if (animalType.equals("kuh") && animal instanceof Cow) {
-                animalCount = animalCount + 1;
+            if (matchesType) {
                 totalCost = totalCost + getFeedCost(animal);
-
-            } else if (animalType.equals("huhn") && animal instanceof Chicken) {
-                animalCount = animalCount + 1;
-                totalCost = totalCost + getFeedCost(animal);
-
-            } else if (animalType.equals("ente") && animal instanceof Duck) {
-                animalCount = animalCount + 1;
-                totalCost = totalCost + getFeedCost(animal);
+                fedAnimals = fedAnimals + 1;
             }
         }
 
-        // Wenn keine passenden Tiere gefunden wurden
-        if (animalCount == 0) {
-            GameStyle.warning("Es wurden keine Tiere dieser Art gefunden.");
+        if (fedAnimals == 0) {
+            GameStyle.warning("Für diese Tierart liegt keine Akte vor.");
+            System.out.println("Die Farmverwaltung konnte niemanden zustellen.");
             GameStyle.endBox();
             return;
         }
 
-        // Prüfen, ob genug Geld vorhanden ist
-        if (money < totalCost) {
-            GameStyle.warning("Du hast nicht genug Geld, um alle Tiere dieser Art zu füttern.");
-            System.out.println(GameStyle.label("Benötigt: ") + totalCost + " Münzen");
-            System.out.println(GameStyle.label("Vorhanden: ") + GameStyle.money(money));
-            System.out.println("Die Farm geht offiziell in den Sparmodus.");
-            GameStyle.endBox();
-            return;
-        }
+        System.out.println(GameStyle.label("Tierart: ")
+                + animalType);
 
-        // Geld abziehen
-        money = money - totalCost;
+        System.out.println(GameStyle.label("Betroffene Tiere: ")
+                + fedAnimals);
 
-        System.out.println(GameStyle.label("Gefundene Tiere: ") + animalCount);
-        System.out.println(GameStyle.label("Gesamtkosten: ") + totalCost + " Münzen");
+        System.out.println(GameStyle.label("Gesamtkosten: ")
+                + totalCost
+                + " Münzen");
+
+        System.out.println(GameStyle.label("Budgetstatus: ")
+                + GameStyle.money(money));
+
         System.out.println();
 
-        // Jetzt werden alle passenden Tiere gefüttert
+        if (money < totalCost) {
+            GameStyle.warning("Die Gruppenversorgung wurde vom Budgetausschuss blockiert.");
+            System.out.println("Die Tiere gründen spontan eine sehr passive Gewerkschaft.");
+            System.out.println("Forderung: Futter. Irgendwann. Vielleicht.");
+            GameStyle.endBox();
+            return;
+        }
+
+        // Geld einmalig abziehen
+        money = money - totalCost;
+
+        System.out.println(GameStyle.BRIGHT_GREEN + "✓ Gruppenversorgung genehmigt." + GameStyle.RESET);
+        System.out.println();
+
+        // Danach alle passenden Tiere füttern
         for (Animal animal : animals) {
 
-            boolean matchesType =
-                    (animalType.equals("schaf") && animal instanceof Sheep)
-                            || (animalType.equals("kuh") && animal instanceof Cow)
-                            || (animalType.equals("huhn") && animal instanceof Chicken)
-                            || (animalType.equals("ente") && animal instanceof Duck);
+            boolean matchesType = matchesAnimalType(animal, animalType);
 
             if (matchesType) {
-
                 int hungerBefore = animal.getHunger();
 
                 animal.feed();
 
                 String personalityEffect = applyPersonalityAfterFeeding(animal);
 
-                int hungerAfter = animal.getHunger();
-
                 System.out.println(GameStyle.BRIGHT_GREEN + "• " + GameStyle.RESET
                         + animal.getName()
-                        + " "
-                        + getPersonalityIcon(animal)
-                        + " "
-                        + GameStyle.BRIGHT_PURPLE
-                        + animal.getPersonality()
-                        + GameStyle.RESET);
-
-                System.out.println("  " + GameStyle.label("Effekt: ") + personalityEffect);
-                System.out.println("  " + GameStyle.label("Hunger: ")
+                        + ": "
                         + GameStyle.getHungerBar(hungerBefore)
                         + " → "
-                        + GameStyle.getHungerBar(hungerAfter));
-                System.out.println();
+                        + GameStyle.getHungerBar(animal.getHunger()));
+
+                if (!personalityEffect.isBlank()) {
+                    System.out.println("  " + personalityEffect.replace("\n", "\n  "));
+                }
             }
         }
 
-        System.out.println(GameStyle.label("Ergebnis: ") + "Alle Tiere der Art '" + animalType + "' wurden gefüttert.");
-        System.out.println(GameStyle.label("Geld: ") + GameStyle.money(money));
+        System.out.println();
+        System.out.println(GameStyle.label("Budgetstatus nach Maßnahme: ")
+                + GameStyle.money(money));
+
+        System.out.println("Die Maßnahme wurde dokumentiert. Niemand liest die Dokumentation.");
 
         GameStyle.endBox();
     }
@@ -559,64 +659,64 @@ public class Farm {
 // die das Interface ResourceProducer verwenden
     public void collectResources() {
 
-        GameStyle.logBox("RESSOURCEN EINSAMMELN");
+        GameStyle.logBox("RESSOURCENPRÜFUNG");
 
         int totalCollected = 0;
 
-        // Die Schleife geht jedes Tier in der Farm durch
+        System.out.println("Tierische Sachleistungen werden eingesammelt.");
+        System.out.println();
+
         for (Animal animal : animals) {
 
-            // Prüfen, ob das Tier Ressourcen produzieren kann
-            if (animal instanceof ResourceProducer) {
+            if (animal instanceof ResourceProducer producer) {
 
-                // Das Tier wird als ResourceProducer behandelt,
-                // damit collectResource() und getResourceName() benutzt werden können
-                ResourceProducer producer = (ResourceProducer) animal;
-
-                // Ressource einsammeln
-                // Im Tier selbst wird der Ressourcenwert dabei auf 0 gesetzt
                 int collectedAmount = producer.collectResource();
-
-                // Name der Ressource holen
                 String resourceName = producer.getResourceName();
 
-                // Eingesammelte Ressource ins Lager legen
-                if (resourceName.equals("Wolle")) {
-                    storedWool = storedWool + collectedAmount;
-                } else if (resourceName.equals("Milch")) {
-                    storedMilk = storedMilk + collectedAmount;
-                } else if (resourceName.equals("Eier")) {
-                    storedEggs = storedEggs + collectedAmount;
-                } else if (resourceName.equals("Federn")) {
-                    storedFeathers = storedFeathers + collectedAmount;
+                switch (resourceName) {
+
+                    case "Wolle":
+                        storedWool = storedWool + collectedAmount;
+                        break;
+
+                    case "Milch":
+                        storedMilk = storedMilk + collectedAmount;
+                        break;
+
+                    case "Eier":
+                        storedEggs = storedEggs + collectedAmount;
+                        break;
+
+                    case "Federn":
+                        storedFeathers = storedFeathers + collectedAmount;
+                        break;
+
+                    default:
+                        GameStyle.warning("Unbekannte Ressource: " + resourceName);
+                        break;
                 }
 
                 totalCollected = totalCollected + collectedAmount;
 
-                // Ausgabe pro Tier
                 System.out.println(GameStyle.BRIGHT_GREEN + "• " + GameStyle.RESET
                         + animal.getName()
-                        + " gibt "
+                        + ": "
                         + GameStyle.BRIGHT_YELLOW
                         + collectedAmount
                         + " "
                         + resourceName
-                        + GameStyle.RESET
-                        + ".");
+                        + GameStyle.RESET);
             }
         }
 
         System.out.println();
 
         if (totalCollected == 0) {
-            System.out.println(GameStyle.label("Ergebnis: ") + "Es gab nichts einzusammeln.");
-            System.out.println("Die Tiere nennen das eine künstlerische Pause.");
+            System.out.println(GameStyle.label("Ergebnis: ")
+                    + "Nichts eingesammelt. Das Lager bleibt traurig.");
         } else {
             System.out.println(GameStyle.label("Ergebnis: ")
-                    + "Insgesamt wurden "
-                    + GameStyle.BRIGHT_YELLOW
                     + totalCollected
-                    + GameStyle.RESET
                     + " Ressourcen eingesammelt.");
         }
 
@@ -633,147 +733,142 @@ public class Farm {
         GameStyle.endBox();
     }
 
-    // Gibt den aktuellen Inhalt des Ressourcenlagers und das Geld schön formatiert aus
+    // Gibt das Ressourcenlager aus
     public void printStorage() {
+
+        GameStyle.logBox("RESSOURCENLAGER");
 
         GameStyle.printStorageArt();
 
-        System.out.println(GameStyle.BRIGHT_YELLOW + "╭─ RESSOURCENLAGER VON " + farmName.toUpperCase() + " ─────────────" + GameStyle.RESET);
-        System.out.println(GameStyle.BRIGHT_YELLOW + "│ " + GameStyle.RESET + "🐑 Wolle:   " + storedWool);
-        System.out.println(GameStyle.BRIGHT_YELLOW + "│ " + GameStyle.RESET + "🐄 Milch:   " + storedMilk);
-        System.out.println(GameStyle.BRIGHT_YELLOW + "│ " + GameStyle.RESET + "🐔 Eier:    " + storedEggs);
-        System.out.println(GameStyle.BRIGHT_YELLOW + "│ " + GameStyle.RESET + "🦆 Federn:  " + storedFeathers);
-        System.out.println(GameStyle.BRIGHT_YELLOW + "├──────────────────────────────────────────────" + GameStyle.RESET);
-        System.out.println(GameStyle.BRIGHT_YELLOW + "│ " + GameStyle.RESET + "💰 Geld:    " + money + " Münzen");
-        System.out.println(GameStyle.BRIGHT_YELLOW + "╰──────────────────────────────────────────────" + GameStyle.RESET);
-    }
+        System.out.println("Die Farmverwaltung öffnet das Lager.");
+        System.out.println("Es riecht nach Heu, Hoffnung und ungeklärter Buchhaltung.");
+        System.out.println();
 
-    // Verkauft alle Ressourcen aus dem Lager
-    public void sellResources() {
-
-        GameStyle.logBox("RESSOURCEN VERKAUFEN");
-
-        // Preise der einzelnen Ressourcen
-        int woolPrice = 3;
-        int milkPrice = 2;
-        int eggPrice = 1;
-        int featherPrice = 2;
-
-        // Einzelwerte berechnen
-        int woolValue = storedWool * woolPrice;
-        int milkValue = storedMilk * milkPrice;
-        int eggValue = storedEggs * eggPrice;
-        int featherValue = storedFeathers * featherPrice;
-
-        // Gesamtwert berechnen
-        int earnedMoney = woolValue + milkValue + eggValue + featherValue;
-
-        // Wenn keine Ressourcen vorhanden sind
-        if (earnedMoney == 0) {
-            GameStyle.warning("Du hast keine Ressourcen zum Verkaufen.");
-            System.out.println("Der Marktstand ist leer. Sehr minimalistisch.");
-            System.out.println("Ein Kunde fragt trotzdem nach Rabatt.");
-            GameStyle.endBox();
-            return;
-        }
-
-        System.out.println(GameStyle.label("Verkaufspreise:"));
+        System.out.println(GameStyle.label("Amtlich erfasster Bestand:"));
 
         System.out.println(GameStyle.BRIGHT_GREEN + "• " + GameStyle.RESET
                 + "Wolle:   "
                 + GameStyle.BRIGHT_YELLOW
                 + storedWool
-                + GameStyle.RESET
-                + " x "
-                + woolPrice
-                + " = "
-                + GameStyle.BRIGHT_GREEN
-                + woolValue
-                + " Münzen"
                 + GameStyle.RESET);
 
         System.out.println(GameStyle.BRIGHT_GREEN + "• " + GameStyle.RESET
                 + "Milch:   "
                 + GameStyle.BRIGHT_YELLOW
                 + storedMilk
-                + GameStyle.RESET
-                + " x "
-                + milkPrice
-                + " = "
-                + GameStyle.BRIGHT_GREEN
-                + milkValue
-                + " Münzen"
                 + GameStyle.RESET);
 
         System.out.println(GameStyle.BRIGHT_GREEN + "• " + GameStyle.RESET
                 + "Eier:    "
                 + GameStyle.BRIGHT_YELLOW
                 + storedEggs
-                + GameStyle.RESET
-                + " x "
-                + eggPrice
-                + " = "
-                + GameStyle.BRIGHT_GREEN
-                + eggValue
-                + " Münzen"
                 + GameStyle.RESET);
 
         System.out.println(GameStyle.BRIGHT_GREEN + "• " + GameStyle.RESET
                 + "Federn:  "
                 + GameStyle.BRIGHT_YELLOW
                 + storedFeathers
-                + GameStyle.RESET
-                + " x "
-                + featherPrice
-                + " = "
-                + GameStyle.BRIGHT_GREEN
-                + featherValue
-                + " Münzen"
                 + GameStyle.RESET);
 
         System.out.println();
 
-        // Geld zur Farm hinzufügen
+        int totalResources = storedWool + storedMilk + storedEggs + storedFeathers;
+
+        if (totalResources == 0) {
+            System.out.println(GameStyle.label("Lagebericht: ")
+                    + "Das Lager ist leer.");
+
+            System.out.println("Die Buchhaltung nennt das übersichtlich.");
+            System.out.println("Die Tiere nennen es enttäuschend.");
+
+        } else if (totalResources < 20) {
+            System.out.println(GameStyle.label("Lagebericht: ")
+                    + "Der Bestand ist vorhanden, aber nicht beeindruckend.");
+
+            System.out.println("Die Farmverwaltung spricht trotzdem von Wachstum.");
+
+        } else if (totalResources < 50) {
+            System.out.println(GameStyle.label("Lagebericht: ")
+                    + "Der Bestand wirkt überraschend stabil.");
+
+            System.out.println("Niemand weiß, wie es so weit kommen konnte.");
+
+        } else {
+            System.out.println(GameStyle.label("Lagebericht: ")
+                    + "Das Lager ist gut gefüllt.");
+
+            System.out.println("Die Ente spricht bereits von Expansion.");
+            System.out.println("Das ist beunruhigend.");
+        }
+
+        GameStyle.endBox();
+    }
+
+    // Verkauft alle Ressourcen aus dem Lager
+    public void sellResources() {
+
+        GameStyle.logBox("MARKTSTAND");
+
+        int woolPrice = 2;
+        int milkPrice = 2;
+        int eggPrice = 1;
+        int featherPrice = 1;
+
+        int woolValue = storedWool * woolPrice;
+        int milkValue = storedMilk * milkPrice;
+        int eggValue = storedEggs * eggPrice;
+        int featherValue = storedFeathers * featherPrice;
+
+        int earnedMoney = woolValue + milkValue + eggValue + featherValue;
+
+        if (earnedMoney == 0) {
+            GameStyle.warning("Keine Ressourcen zum Verkaufen.");
+            System.out.println("Der Marktstand steht trotzdem. Aus Prinzip.");
+            GameStyle.endBox();
+            return;
+        }
+
+        System.out.println(GameStyle.label("Verkauf:"));
+        System.out.println("• Wolle:   " + storedWool + " x " + woolPrice + " = " + woolValue + " Münzen");
+        System.out.println("• Milch:   " + storedMilk + " x " + milkPrice + " = " + milkValue + " Münzen");
+        System.out.println("• Eier:    " + storedEggs + " x " + eggPrice + " = " + eggValue + " Münzen");
+        System.out.println("• Federn:  " + storedFeathers + " x " + featherPrice + " = " + featherValue + " Münzen");
+
         money = money + earnedMoney;
 
-        // Ressourcenlager leeren
         storedWool = 0;
         storedMilk = 0;
         storedEggs = 0;
         storedFeathers = 0;
 
+        System.out.println();
         System.out.println(GameStyle.label("Einnahmen: ")
                 + GameStyle.BRIGHT_GREEN
                 + earnedMoney
                 + " Münzen"
                 + GameStyle.RESET);
 
-        System.out.println(GameStyle.label("Aktuelles Geld: ")
+        System.out.println(GameStyle.label("Budget: ")
                 + GameStyle.money(money));
 
-        System.out.println();
-
-        System.out.println("Der Marktstand war ein voller Erfolg.");
-        System.out.println("Die Ente nennt es passives Einkommen.");
+        System.out.println("Die Ente nennt es Skalierung.");
 
         GameStyle.endBox();
     }
 
     // Behandelt ein krankes Tier anhand seines Namens
+// Behandelt ein krankes Tier anhand seines Namens
     public void treatAnimalByName(String name) {
 
         GameStyle.logBox("TIERÄRZTIN");
 
-        // Die Behandlung durch die Tierärztin kostet 30 Münzen
         int treatmentCost = 30;
 
-        // Tier über den Namen suchen
         Animal animal = getAnimalByName(name);
 
-        // Wenn kein Tier gefunden wurde, wird die Methode beendet
         if (animal == null) {
-            GameStyle.warning("Die Tierärztin schaut auf die Liste und findet dieses Tier nicht.");
-            System.out.println("Diagnose: Verwaltungsfehler mit leichtem Kontrollverlust.");
+            GameStyle.warning("Keine Patientenakte gefunden.");
+            System.out.println("Die Tierärztin wirkt administrativ verletzt.");
             GameStyle.endBox();
             return;
         }
@@ -787,24 +882,20 @@ public class Farm {
                 + animal.getPersonality()
                 + GameStyle.RESET);
 
-        System.out.println(GameStyle.label("Aktuelles Geld: ")
+        System.out.println(GameStyle.label("Budget: ")
                 + GameStyle.money(money));
 
         System.out.println();
 
-        // Prüfen, ob das Tier überhaupt krank ist
         if (!animal.isSick()) {
-            System.out.println(GameStyle.BRIGHT_GREEN + "✓ " + animal.getName() + " ist nicht krank." + GameStyle.RESET);
-            System.out.println("Die Tierärztin setzt professionell das Stethoskop an.");
-            System.out.println("Dann nickt sie ernst und sagt:");
-            System.out.println("\"Dieses Tier ist medizinisch unauffällig, aber emotional auffällig.\"");
-            System.out.println();
+            System.out.println(GameStyle.BRIGHT_GREEN + "✓ Keine Behandlung nötig." + GameStyle.RESET);
+            System.out.println(animal.getName() + " ist gesund. Die Stimmung bleibt trotzdem verdächtig.");
             System.out.println(GameStyle.label("Kosten: ") + "0 Münzen");
+
             GameStyle.endBox();
             return;
         }
 
-        // Diagnose anzeigen
         System.out.println(GameStyle.label("Diagnose: ")
                 + GameStyle.BRIGHT_RED
                 + animal.getDiseaseName()
@@ -814,313 +905,484 @@ public class Farm {
                 + animal.getSickRounds()
                 + " Runden");
 
-        System.out.println(GameStyle.label("Behandlungskosten: ")
-                + treatmentCost
-                + " Münzen");
-
-        System.out.println();
-
-        // Prüfen, ob genug Geld für die Behandlung vorhanden ist
-        if (money < treatmentCost) {
-            GameStyle.warning("Du hast nicht genug Geld für die Behandlung.");
-            System.out.println("Die Tierärztin schaut dich an wie ein offener Mahnbescheid.");
-            System.out.println();
-            System.out.println(GameStyle.label("Benötigt: ") + treatmentCost + " Münzen");
-            System.out.println(GameStyle.label("Vorhanden: ") + GameStyle.money(money));
-            System.out.println();
-            System.out.println("Das Tier bleibt krank.");
-            GameStyle.endBox();
-            return;
-        }
-
-        // Geld für die Behandlung abziehen
-        money = money - treatmentCost;
-
-        // Tier heilen
-        animal.heal();
-
-        System.out.println(GameStyle.BRIGHT_GREEN + "✓ Behandlung erfolgreich." + GameStyle.RESET);
-        System.out.println(getTreatmentMessage(animal));
-
-        System.out.println();
-
         System.out.println(GameStyle.label("Kosten: ")
                 + treatmentCost
                 + " Münzen");
 
-        System.out.println(GameStyle.label("Aktuelles Geld: ")
+        System.out.println();
+
+        if (money < treatmentCost) {
+            GameStyle.warning("Nicht genug Geld für die Behandlung.");
+            System.out.println("Das Budget sagt nein. Sehr laut.");
+            System.out.println(GameStyle.label("Vorhanden: ")
+                    + GameStyle.money(money));
+
+            GameStyle.endBox();
+            return;
+        }
+
+        money = money - treatmentCost;
+
+        String treatmentMessage = getTreatmentMessage(animal);
+
+        animal.heal();
+
+        System.out.println(GameStyle.BRIGHT_GREEN + "✓ Behandlung erfolgreich." + GameStyle.RESET);
+        System.out.println(treatmentMessage);
+
+        System.out.println();
+
+        System.out.println(GameStyle.label("Budget danach: ")
                 + GameStyle.money(money));
 
         GameStyle.endBox();
     }
 
-    // Mit dieser Methode kann zufällig ein Tier krank werden
+    // Löst zufällig eine Krankheit bei einem Tier aus
     public void randomDisease() {
 
-        // Wenn es keine Tiere gibt, kann auch kein Tier krank werden
+        // Wenn es keine Tiere gibt, kann auch niemand krank werden
         if (animals.isEmpty()) {
             return;
         }
 
-        // Zufallszahl von 1 bis 10 erzeugen
+        // Zufallszahl zwischen 1 und 10
         int randomNumber = (int) (Math.random() * 10) + 1;
 
-        // Nur bei 1 oder 2 passiert etwas
-        // Das entspricht ungefähr 20 Prozent Chance
-        if (randomNumber <= 2) {
+        // Nur bei 20% Wahrscheinlichkeit passiert etwas
+        if (randomNumber > 2) {
+            return;
+        }
 
-            // Zufällige Position in der Tierliste auswählen
-            int randomIndex = (int) (Math.random() * animals.size());
+        // Zufälliges Tier auswählen
+        int randomIndex = (int) (Math.random() * animals.size());
+        Animal randomAnimal = animals.get(randomIndex);
 
-            // Tier an dieser Position aus der Liste holen
-            Animal randomAnimal = animals.get(randomIndex);
+        // Wenn das Tier schon krank ist, passiert nichts Neues
+        if (randomAnimal.isSick()) {
+            return;
+        }
 
-            // Nur gesunde Tiere sollen neu krank werden
-            if (!randomAnimal.isSick()) {
+        // Schüchterne Tiere haben manchmal Glück,
+        // weil sie sich rechtzeitig verstecken
+        if (randomAnimal.getPersonality().equals("schüchtern")) {
+            int hideChance = (int) (Math.random() * 2) + 1;
 
-                // Schüchterne Tiere können sich manchmal verstecken
-                if (randomAnimal.getPersonality().equals("schüchtern")) {
+            if (hideChance == 1) {
+                GameStyle.logBox("GESUNDHEITSAMT MELDET SICH");
 
-                    int hideChance = (int) (Math.random() * 2) + 1;
+                System.out.println(GameStyle.label("Tier: ")
+                        + randomAnimal.getName()
+                        + " "
+                        + getPersonalityIcon(randomAnimal)
+                        + " "
+                        + GameStyle.BRIGHT_PURPLE
+                        + randomAnimal.getPersonality()
+                        + GameStyle.RESET);
 
-                    if (hideChance == 1) {
-                        System.out.println(randomAnimal.getName() + " hat sich rechtzeitig hinter einem Heuballen versteckt und ist nicht krank geworden.");
-                        return;
-                    }
-                }
+                System.out.println();
 
-                // Tier krank machen
-                randomAnimal.makeSick();
+                System.out.println(randomAnimal.getName()
+                        + " hat sich rechtzeitig hinter einem Heuballen versteckt.");
 
-                // Ausgabe für den User
-                System.out.println(getDiseaseMessage(randomAnimal));
+                System.out.println("Die Krankheit konnte nicht zugestellt werden.");
+                System.out.println("Das Gesundheitsamt ist irritiert, aber machtlos.");
+
+                GameStyle.endBox();
+                return;
             }
         }
+
+        // Tier krank machen
+        randomAnimal.makeSick();
+
+        GameStyle.logBox("GESUNDHEITSAMT MELDET SICH");
+
+        System.out.println(GameStyle.label("Tier: ")
+                + randomAnimal.getName()
+                + " "
+                + getPersonalityIcon(randomAnimal)
+                + " "
+                + GameStyle.BRIGHT_PURPLE
+                + randomAnimal.getPersonality()
+                + GameStyle.RESET);
+
+        System.out.println(GameStyle.label("Diagnose: ")
+                + GameStyle.BRIGHT_RED
+                + randomAnimal.getDiseaseName()
+                + GameStyle.RESET);
+
+        System.out.println();
+
+        System.out.println(getDiseaseMessage(randomAnimal));
+
+        System.out.println();
+        System.out.println("Die Farmverwaltung empfiehlt eine Tierärztin.");
+        System.out.println("Oder Panik. Panik ist günstiger, aber weniger wirksam.");
+
+        GameStyle.endBox();
     }
 
-    // Prüft, ob kranke Tiere andere Tiere anstecken
+    // Krankheiten können sich auf andere Tiere übertragen
     public void spreadDisease() {
 
-        // Wenn weniger als 2 Tiere auf der Farm sind,
-        // kann kein anderes Tier angesteckt werden
         if (animals.size() < 2) {
             return;
         }
 
-        // Die Schleife geht alle Tiere durch
         for (Animal sickAnimal : animals) {
 
-            // Nur kranke Tiere, die schon mindestens 3 Runden krank sind,
-            // können andere Tiere anstecken
-            if (sickAnimal.isSick() && sickAnimal.getSickRounds() >= 3) {
+            if (sickAnimal.isSick()) {
 
-                // Zufällige Position in der Tierliste auswählen
-                int randomIndex = (int) (Math.random() * animals.size());
+                int randomNumber = (int) (Math.random() * 10) + 1;
 
-                // Tier an dieser zufälligen Position holen
-                Animal otherAnimal = animals.get(randomIndex);
+                if (randomNumber <= 2) {
 
-                // Das Tier darf sich nicht selbst anstecken
-                // und es soll nur ein gesundes Tier angesteckt werden
-                if (otherAnimal != sickAnimal && !otherAnimal.isSick()) {
+                    int randomIndex = (int) (Math.random() * animals.size());
+                    Animal otherAnimal = animals.get(randomIndex);
 
-                    // Schüchterne Tiere können sich manchmal vor Ansteckung drücken
-                    if (otherAnimal.getPersonality().equals("schüchtern")) {
+                    if (otherAnimal != sickAnimal && !otherAnimal.isSick()) {
+                        otherAnimal.makeSick();
 
-                        int hideChance = (int) (Math.random() * 2) + 1;
+                        GameStyle.logBox("ANSTECKUNGSVORGANG");
+                        System.out.println(GameStyle.label("Ursprung: ")
+                                + sickAnimal.getName()
+                                + " mit "
+                                + GameStyle.BRIGHT_RED
+                                + sickAnimal.getDiseaseName()
+                                + GameStyle.RESET);
+                        System.out.println(GameStyle.label("Neuer Fall: ")
+                                + otherAnimal.getName()
+                                + " "
+                                + getPersonalityIcon(otherAnimal)
+                                + " "
+                                + GameStyle.BRIGHT_PURPLE
+                                + otherAnimal.getPersonality()
+                                + GameStyle.RESET);
+                        System.out.println(GameStyle.label("Diagnose: ")
+                                + GameStyle.BRIGHT_RED
+                                + otherAnimal.getDiseaseName()
+                                + GameStyle.RESET);
 
-                        if (hideChance == 1) {
-                            System.out.println(otherAnimal.getName() + " hat sozialen Kontakt vermieden und wurde nicht angesteckt.");
-                            return;
-                        }
+                        System.out.println();
+
+                        System.out.println("Die Lage wurde als \"überschaubar chaotisch\" eingestuft.");
+                        System.out.println("Eine Krisensitzung wurde angesetzt und sofort wieder vergessen.");
+
+                        GameStyle.endBox();
                     }
-
-                    // Tier krank machen
-                    otherAnimal.makeSick();
-
-                    // Ausgabe für den User
-                    System.out.println(sickAnimal.getName() + " hat " + otherAnimal.getName() + " angesteckt.");
-                    System.out.println(getDiseaseMessage(otherAnimal));
                 }
             }
         }
     }
 
-    // Löst manchmal ein zufälliges Farm-Event aus
+    // Zufälliges Farm-Ereignis am Ende einer Runde
     public void randomFarmEvent(Scanner scanner) {
 
-        // Wenn es keine Tiere gibt, kann kein Tier-Event passieren
+        // Wenn es keine Tiere gibt, passiert nichts mehr
         if (animals.isEmpty()) {
             return;
         }
 
-        // Zufallszahl von 1 bis 10
-        int eventChance = (int) (Math.random() * 10) + 1;
+        // Zufallszahl zwischen 1 und 100
+        int randomNumber = (int) (Math.random() * 100) + 1;
 
-        // Nur bei 1, 2 oder 3 passiert ein Event
-        // Das entspricht ungefähr 30 Prozent Chance pro Runde
-        if (eventChance > 3) {
+        // Nicht jede Runde soll ein Ereignis passieren
+        if (randomNumber > 35) {
             return;
         }
 
-        // Zufälliges Event von 1 bis 8 auswählen
-        int eventNumber = (int) (Math.random() * 8) + 1;
+        // Zufälliges Ereignis auswählen
+        int eventNumber = (int) (Math.random() * 5) + 1;
 
-        // Zufälliges Tier aus der Liste auswählen
-        int randomIndex = (int) (Math.random() * animals.size());
-        Animal randomAnimal = animals.get(randomIndex);
-
-        // Event 1: Das Tier bekommt weniger Hunger
         if (eventNumber == 1) {
+            hayInspectionEvent();
 
-            randomAnimal.setHunger(randomAnimal.getHunger() - 10);
-
-            // Hunger soll nicht unter 0 fallen
-            if (randomAnimal.getHunger() < 0) {
-                randomAnimal.setHunger(0);
-            }
-
-            System.out.println(randomAnimal.getName() + " hat heimlich Snacks gefunden. Hunger -10.");
-
-            // Event 2: Das Tier bekommt mehr Hunger
         } else if (eventNumber == 2) {
+            suspiciousDuckEvent();
 
-            randomAnimal.setHunger(randomAnimal.getHunger() + 10);
-
-            System.out.println(randomAnimal.getName() + " hatte einen dramatischen Tag. Hunger +10.");
-
-            // Event 3: Alle Tiere werden ein bisschen älter
         } else if (eventNumber == 3) {
+            budgetMeetingEvent();
 
-            increaseAge();
-
-            System.out.println("Die Zeit ist heute irgendwie schneller vergangen. Alle Tiere sind älter geworden.");
-
-            // Event 4: Die Farm bekommt etwas Geld geschenkt
         } else if (eventNumber == 4) {
+            lostFormEvent();
 
-            money = money + 15;
-
-            System.out.println("Ein Tourist hat deine Farm süß gefunden und 15 Münzen gespendet.");
-
-            // Event 5: Die Farm verliert etwas Geld
-        } else if (eventNumber == 5) {
-
-            money = money - 10;
-
-            // Geld soll nicht unter 0 fallen
-            if (money < 0) {
-                money = 0;
-            }
-
-            System.out.println("Die Tierärztin hat eine Rechnung aus 2023 gefunden. Geld -10.");
-
-            // Event 6: Ressourcen-Bonus je nach Tierart
-        } else if (eventNumber == 6) {
-
-            // Wenn das zufällige Tier ein Schaf ist
-            if (randomAnimal instanceof Sheep) {
-                Sheep sheep = (Sheep) randomAnimal;
-                sheep.setWool(sheep.getWool() + 4);
-
-                System.out.println(sheep.getName() + " hatte einen Flausch-Boost. Wolle +4.");
-
-                // Wenn das zufällige Tier eine Kuh ist
-            } else if (randomAnimal instanceof Cow) {
-                Cow cow = (Cow) randomAnimal;
-                cow.setMilk(cow.getMilk() + 3);
-
-                System.out.println(cow.getName() + " war heute extra motiviert. Milch +3.");
-
-                // Wenn das zufällige Tier ein Huhn ist
-            } else if (randomAnimal instanceof Chicken) {
-                Chicken chicken = (Chicken) randomAnimal;
-                chicken.setEggs(chicken.getEggs() + 3);
-
-                System.out.println(chicken.getName() + " legt aus Trotz Extra-Eier. Eier +3.");
-
-                // Wenn das zufällige Tier eine Ente ist
-            } else if (randomAnimal instanceof Duck) {
-                Duck duck = (Duck) randomAnimal;
-                duck.setFeathers(duck.getFeathers() + 2);
-
-                System.out.println(duck.getName() + " hat dramatisch im Regen posiert. Federn +2.");
-            }
-
-            // Event 7: Die Tiere gründen eine Gewerkschaft
-        } else if (eventNumber == 7) {
-
-            System.out.println("Donald hat eine Gewerkschaft gegründet.");
-            System.out.println("Alle Tiere fordern bessere Snacks. Hunger +5 bei allen.");
-
-            // Alle Tiere werden ein bisschen hungriger,
-            // weil sie jetzt bessere Arbeitsbedingungen und Snacks fordern
-            for (Animal animal : animals) {
-                animal.setHunger(animal.getHunger() + 5);
-            }
-
-            // Event 8: Großes Spezialevent
-        } else if (eventNumber == 8) {
-
+        } else {
             farmCourtEvent(scanner);
         }
     }
 
-    // Großes Spezialevent: Die Tiere halten ein Farmgericht ab
-    public void farmCourtEvent(Scanner scanner) {
+    // Ereignis: Heu-Kontrolle
+    public void hayInspectionEvent() {
 
-        // Wenn es keine Tiere gibt, kann kein Gericht stattfinden
-        if (animals.isEmpty()) {
+        GameStyle.logBox("HEU-KONTROLLE");
+
+        System.out.println("Das Amt für Tierdrama und Heuordnung führt eine Stichprobe durch.");
+        System.out.println("Niemand weiß, wer die Kontrolle beauftragt hat.");
+        System.out.println("Alle wirken trotzdem schuldig.");
+
+        System.out.println();
+
+        int randomNumber = (int) (Math.random() * 2) + 1;
+
+        if (randomNumber == 1) {
+            int bonus = 15;
+            money = money + bonus;
+
+            System.out.println(GameStyle.BRIGHT_GREEN + "✓ Die Heulage wurde als akzeptabel eingestuft." + GameStyle.RESET);
+            System.out.println("Du erhältst " + bonus + " Münzen Qualitätsbonus.");
+            System.out.println("Das Formular wurde korrekt gelocht. Das beeindruckt alle.");
+        } else {
+            System.out.println(GameStyle.BRIGHT_RED + "⚠ Die Heulage ist organisatorisch bedenklich." + GameStyle.RESET);
+            System.out.println("Die Tiere sind enttäuscht, aber nicht überrascht.");
+
+            for (Animal animal : animals) {
+                animal.setHunger(animal.getHunger() + 5);
+            }
+
+            System.out.println("Alle Tiere bekommen +5 Hunger.");
+        }
+
+        GameStyle.endBox();
+    }
+
+    // Ereignis: Verdächtige Ente
+    public void suspiciousDuckEvent() {
+
+        GameStyle.logBox("ENTENLAGEBERICHT");
+
+        Duck duck = null;
+
+        // Prüfen, ob es überhaupt eine Ente gibt
+        for (Animal animal : animals) {
+            if (animal instanceof Duck) {
+                duck = (Duck) animal;
+                break;
+            }
+        }
+
+        // Falls keine Ente existiert, passiert ein allgemeines Ereignis
+        if (duck == null) {
+            System.out.println("Es wurde eine verdächtige Ente gemeldet.");
+            System.out.println("Problem: Auf deiner Farm gibt es keine Ente.");
+            System.out.println("Die Farmverwaltung bewertet das als besonders verdächtig.");
+
+            int bonus = 5;
+            money = money + bonus;
+
+            System.out.println();
+            System.out.println("Du bekommst " + bonus + " Münzen für kreative Problemlösung.");
+            GameStyle.endBox();
             return;
         }
 
-        // Zufälliges Tier als Ankläger auswählen
+        System.out.println(GameStyle.label("Betroffene Ente: ")
+                + duck.getName()
+                + " "
+                + getPersonalityIcon(duck)
+                + " "
+                + GameStyle.BRIGHT_PURPLE
+                + duck.getPersonality()
+                + GameStyle.RESET);
+
+        System.out.println();
+
+        int randomNumber = (int) (Math.random() * 2) + 1;
+
+        if (randomNumber == 1) {
+            int bonus = 20;
+            money = money + bonus;
+
+            System.out.println(duck.getName() + " hat heimlich einen Businessplan geschrieben.");
+            System.out.println("Niemand versteht ihn, aber Investor:innen lieben Pfeile nach oben.");
+            System.out.println();
+            System.out.println(GameStyle.BRIGHT_GREEN + "✓ Du erhältst " + bonus + " Münzen." + GameStyle.RESET);
+            System.out.println("Die Ente nennt es Skalierung.");
+        } else {
+            System.out.println(duck.getName() + " hat ein Meeting ohne Agenda einberufen.");
+            System.out.println("Alle verlassen es hungriger und mit weniger Lebenswillen.");
+
+            for (Animal animal : animals) {
+                animal.setHunger(animal.getHunger() + 10);
+            }
+
+            System.out.println();
+            System.out.println(GameStyle.BRIGHT_RED + "⚠ Alle Tiere bekommen +10 Hunger." + GameStyle.RESET);
+        }
+
+        GameStyle.endBox();
+    }
+
+    // Ereignis: Budgetmeeting
+    public void budgetMeetingEvent() {
+
+        GameStyle.logBox("BUDGETMEETING");
+
+        System.out.println("Die Farmverwaltung setzt ein Budgetmeeting an.");
+        System.out.println("Es gibt keine Agenda, aber sehr starke Meinungen.");
+
+        System.out.println();
+
+        int randomNumber = (int) (Math.random() * 2) + 1;
+
+        if (randomNumber == 1) {
+            int saving = 10;
+            money = money + saving;
+
+            System.out.println(GameStyle.BRIGHT_GREEN + "✓ Durch konsequentes Weglassen wurde Geld gespart." + GameStyle.RESET);
+            System.out.println("Niemand weiß, was weggelassen wurde.");
+            System.out.println("Du erhältst " + saving + " Münzen.");
+        } else {
+            int cost = 10;
+
+            System.out.println(GameStyle.BRIGHT_RED + "⚠ Das Meeting verursacht Folgekosten." + GameStyle.RESET);
+            System.out.println("Es wurden Snacks bestellt. Für Tiere. Aus Versehen.");
+
+            if (money >= cost) {
+                money = money - cost;
+                System.out.println("Du verlierst " + cost + " Münzen.");
+            } else {
+                System.out.println("Du hast nicht genug Geld.");
+                System.out.println("Das Budgetmeeting wird als emotionaler Schaden verbucht.");
+
+                for (Animal animal : animals) {
+                    animal.setHunger(animal.getHunger() + 5);
+                }
+
+                System.out.println("Alle Tiere bekommen +5 Hunger.");
+            }
+        }
+
+        GameStyle.endBox();
+    }
+
+    // Ereignis: Formular verschwunden
+    public void lostFormEvent() {
+
+        GameStyle.logBox("FORMULAR 7B FEHLT");
+
+        System.out.println("Ein wichtiges Formular ist verschwunden.");
+        System.out.println("Niemand weiß, wofür es war.");
+        System.out.println("Aber alle sind sicher, dass es wichtig war.");
+
+        System.out.println();
+
+        int randomNumber = (int) (Math.random() * 2) + 1;
+
+        if (randomNumber == 1) {
+            System.out.println(GameStyle.BRIGHT_GREEN + "✓ Das Formular taucht im Futterlager wieder auf." + GameStyle.RESET);
+            System.out.println("Es riecht nach Heu und passiver Aggression.");
+
+            for (Animal animal : animals) {
+                animal.setHunger(animal.getHunger() - 5);
+
+                if (animal.getHunger() < 0) {
+                    animal.setHunger(0);
+                }
+            }
+
+            System.out.println("Alle Tiere bekommen -5 Hunger.");
+        } else {
+            System.out.println(GameStyle.BRIGHT_RED + "⚠ Das Formular bleibt verschwunden." + GameStyle.RESET);
+            System.out.println("Die Farmverwaltung reagiert mit einer neuen Excel-Liste.");
+
+            for (Animal animal : animals) {
+                animal.setHunger(animal.getHunger() + 5);
+            }
+
+            System.out.println("Alle Tiere bekommen +5 Hunger.");
+        }
+
+        GameStyle.endBox();
+    }
+
+    // Besonderes Ereignis: Das Farmgericht tagt
+// Besonderes Ereignis: Das Farmgericht tagt
+    public void farmCourtEvent(Scanner scanner) {
+
+        GameStyle.logBox("FARMGERICHT");
+
+        if (animals.isEmpty()) {
+            System.out.println("Das Farmgericht tagt. Niemand erscheint.");
+            System.out.println("Die Aktenlage ist leer, aber unangenehm.");
+            GameStyle.endBox();
+            return;
+        }
+
         int randomIndex = (int) (Math.random() * animals.size());
         Animal accuser = animals.get(randomIndex);
 
         GameStyle.printCourtArt();
 
-        System.out.println(GameStyle.BRIGHT_PURPLE + "╔════════════════════════════════════════════════════════════╗" + GameStyle.RESET);
-        System.out.println(GameStyle.BRIGHT_PURPLE + "║                    SPEZIALEVENT                          ║" + GameStyle.RESET);
-        System.out.println(GameStyle.BRIGHT_PURPLE + "╚════════════════════════════════════════════════════════════╝" + GameStyle.RESET);
-        System.out.println(GameStyle.BRIGHT_RED + "⚖️  DAS FARMGERICHT TAGT." + GameStyle.RESET);
-        System.out.println(accuser.getName() + " erhebt schwere Vorwürfe gegen die Farmleitung.");
+        System.out.println(GameStyle.label("Kläger: ")
+                + accuser.getName()
+                + " "
+                + getPersonalityIcon(accuser)
+                + " "
+                + GameStyle.BRIGHT_PURPLE
+                + accuser.getPersonality()
+                + GameStyle.RESET);
+
+        System.out.println(GameStyle.label("Vorwurf: ")
+                + "Heuversagen mit emotionaler Folgewirkung");
+
         System.out.println();
-        System.out.println("Anklagepunkte:");
-        System.out.println("- emotional fragwürdige Fütterungszeiten");
-        System.out.println("- zu wenig Premium-Heu");
-        System.out.println("- mindestens ein Tier fühlt sich nicht ausreichend gesehen");
+
+        System.out.println(GameStyle.label("Optionen:"));
+        System.out.println("1 - 20 Münzen Vergleich zahlen");
+        System.out.println("2 - Verteidigungsrede halten");
+        System.out.println("3 - Sündenbock benennen");
+        System.out.println("4 - Schweigen");
+
         System.out.println();
-        System.out.println("Wie möchtest du dich verteidigen?");
-        System.out.println("1 - Die Tiere mit Snacks bestechen");
-        System.out.println("2 - Eine dramatische Verteidigungsrede halten");
-        System.out.println("3 - Einen Sündenbock benennen");
-        System.out.print("Auswahl: ");
+        System.out.print(GameStyle.BRIGHT_YELLOW + "➜ Entscheidung: " + GameStyle.RESET);
+        String decision = scanner.nextLine().trim();
 
-        String choice = scanner.nextLine().trim();
+        System.out.println();
 
-        if (choice.equals("1")) {
+        switch (decision) {
 
-            // Bestechung kostet Geld
-            int bribeCost = 20;
+            case "1":
+                handleCourtBribe(accuser);
+                break;
 
-            if (money < bribeCost) {
-                System.out.println("Du möchtest die Tiere bestechen, hast aber nicht genug Geld.");
-                System.out.println("Das Gericht wertet das als peinlich. Alle Tiere bekommen Hunger +10.");
+            case "2":
+                handleCourtSpeech(accuser);
+                break;
 
-                for (Animal animal : animals) {
-                    animal.setHunger(animal.getHunger() + 10);
-                }
+            case "3":
+                handleCourtScapegoat(accuser);
+                break;
 
-                return;
-            }
+            case "4":
+                handleCourtSilence(accuser);
+                break;
 
-            money = money - bribeCost;
+            default:
+                GameStyle.warning("Ungültige Entscheidung.");
+                System.out.println("Das Gericht wertet das als Schweigen.");
+                handleCourtSilence(accuser);
+                break;
+        }
 
-            System.out.println("Du verteilst Snacks im Gerichtssaal.");
-            System.out.println("Die Moral ist fragwürdig, aber effektiv.");
-            System.out.println("Geld -" + bribeCost);
-            System.out.println("Alle Tiere Hunger -10.");
+        System.out.println();
+        System.out.println(GameStyle.label("Budget: ")
+                + GameStyle.money(money));
+
+        GameStyle.endBox();
+    }
+
+    // Option 1: Außergerichtliche Einigung
+// Option 1: Vergleich zahlen
+    public void handleCourtBribe(Animal accuser) {
+
+        int settlementCost = 20;
+
+        if (money >= settlementCost) {
+            money = money - settlementCost;
+
+            System.out.println(GameStyle.BRIGHT_GREEN + "✓ Vergleich angenommen." + GameStyle.RESET);
+            System.out.println(accuser.getName() + " nennt es Gerechtigkeit.");
 
             for (Animal animal : animals) {
                 animal.setHunger(animal.getHunger() - 10);
@@ -1130,150 +1392,215 @@ public class Farm {
                 }
             }
 
-        } else if (choice.equals("2")) {
-
-            // Dramatische Rede mit Zufallsausgang
-            int speechChance = (int) (Math.random() * 2) + 1;
-
-            System.out.println("Du trittst nach vorne und hältst eine Rede,");
-            System.out.println("die irgendwo zwischen Shakespeare und Schadensbegrenzung liegt.");
-
-            if (speechChance == 1) {
-                System.out.println("Die Tiere sind bewegt.");
-                System.out.println(accuser.getName() + " wischt sich eine Träne aus dem Fell.");
-                System.out.println("Ein Sponsor sieht das Drama und spendet 25 Münzen.");
-
-                money = money + 25;
-
-            } else {
-                System.out.println("Die Rede kommt nicht gut an.");
-                System.out.println("Ein Huhn ruft: 'Objection!' obwohl niemand weiß, woher es das Wort kennt.");
-                System.out.println("Alle Tiere Hunger +10.");
-
-                for (Animal animal : animals) {
-                    animal.setHunger(animal.getHunger() + 10);
-                }
-            }
-
-        } else if (choice.equals("3")) {
-
-            // Sündenbock-Variante
-            if (animals.size() < 2) {
-                System.out.println("Du möchtest einen Sündenbock benennen, aber es gibt nur ein Tier.");
-                System.out.println("Das ist unangenehm offensichtlich.");
-                accuser.setPersonality("dramatisch");
-                return;
-            }
-
-            Animal scapegoat = accuser;
-
-            // Solange zufällig neu wählen, bis es nicht der Ankläger selbst ist
-            while (scapegoat == accuser) {
-                int scapegoatIndex = (int) (Math.random() * animals.size());
-                scapegoat = animals.get(scapegoatIndex);
-            }
-
-            System.out.println("Du benennst " + scapegoat.getName() + " als Sündenbock.");
-            System.out.println("Niemand versteht den Zusammenhang, aber alle nicken ernst.");
-            System.out.println(scapegoat.getName() + " wird ab jetzt dramatisch.");
-            System.out.println("Alle anderen Tiere Hunger -5.");
-
-            scapegoat.setPersonality("dramatisch");
-
-            for (Animal animal : animals) {
-                if (animal != scapegoat) {
-                    animal.setHunger(animal.getHunger() - 5);
-
-                    if (animal.getHunger() < 0) {
-                        animal.setHunger(0);
-                    }
-                }
-            }
+            System.out.println("Alle Tiere bekommen -10 Hunger.");
 
         } else {
-            System.out.println("Du schweigst.");
-            System.out.println("Das Gericht interpretiert das als Schuldeingeständnis.");
-            System.out.println("Alle Tiere Hunger +15.");
+            GameStyle.warning("Nicht genug Geld für den Vergleich.");
+            System.out.println("Das Gericht seufzt in Paragrafen.");
 
             for (Animal animal : animals) {
-                animal.setHunger(animal.getHunger() + 15);
+                animal.setHunger(animal.getHunger() + 10);
+            }
+
+            System.out.println("Alle Tiere bekommen +10 Hunger.");
+        }
+    }
+
+    // Option 2: Dramatische Verteidigungsrede
+// Option 2: Verteidigungsrede
+    public void handleCourtSpeech(Animal accuser) {
+
+        int randomNumber = (int) (Math.random() * 2) + 1;
+
+        System.out.println("Du hältst eine Rede über Heu, Verantwortung und Führung.");
+
+        if (randomNumber == 1) {
+            int reward = 25;
+            money = money + reward;
+
+            System.out.println(GameStyle.BRIGHT_GREEN + "✓ Die Rede wirkt überraschend seriös." + GameStyle.RESET);
+            System.out.println(accuser.getName() + " zieht die Beschwerde zurück.");
+            System.out.println("Du erhältst " + reward + " Münzen.");
+
+        } else {
+            GameStyle.warning("Die Rede eskaliert.");
+            System.out.println(accuser.getName() + " fühlt sich nicht gehört.");
+
+            for (Animal animal : animals) {
+                animal.setHunger(animal.getHunger() + 10);
+            }
+
+            System.out.println("Alle Tiere bekommen +10 Hunger.");
+        }
+    }
+
+    // Option 3: Sündenbock benennen
+// Option 3: Sündenbock benennen
+    public void handleCourtScapegoat(Animal accuser) {
+
+        if (animals.size() < 2) {
+            System.out.println("Es gibt kein anderes Tier.");
+            System.out.println(accuser.getName() + " wird dadurch dramatischer.");
+
+            accuser.setPersonality("dramatisch");
+            return;
+        }
+
+        Animal scapegoat = accuser;
+
+        while (scapegoat == accuser) {
+            int randomIndex = (int) (Math.random() * animals.size());
+            scapegoat = animals.get(randomIndex);
+        }
+
+        System.out.println(scapegoat.getName() + " wird als Managementproblem benannt.");
+        System.out.println("Die Personalentwicklung nennt es Wachstum.");
+
+        scapegoat.setPersonality("dramatisch");
+
+        for (Animal animal : animals) {
+            if (animal != scapegoat) {
+                animal.setHunger(animal.getHunger() - 5);
+
+                if (animal.getHunger() < 0) {
+                    animal.setHunger(0);
+                }
             }
         }
 
-        System.out.println("Das Farmgericht wird vertagt.");
-        System.out.println("Aktuelles Geld: " + money + " Münzen");
+        System.out.println("Alle anderen Tiere bekommen -5 Hunger.");
     }
 
-    // Gibt manchmal einen lustigen Kommentar zu einem zufälligen Tier aus
+    // Option 4: Schweigen
+// Option 4: Schweigen
+    public void handleCourtSilence(Animal accuser) {
+
+        System.out.println("Du schweigst.");
+        System.out.println(accuser.getName() + " wertet das als Schuldeingeständnis.");
+
+        for (Animal animal : animals) {
+            animal.setHunger(animal.getHunger() + 15);
+        }
+
+        System.out.println("Alle Tiere bekommen +15 Hunger.");
+    }
+
+    // Gibt zufällig einen kurzen Kommentar von einem Tier aus
     public void randomAnimalComment() {
 
-        // Wenn es keine Tiere gibt, kann auch kein Kommentar ausgegeben werden
         if (animals.isEmpty()) {
             return;
         }
 
-        // Zufallszahl von 1 bis 10 erzeugen
-        int commentChance = (int) (Math.random() * 10) + 1;
+        int commentChance = (int) (Math.random() * 100) + 1;
 
-        // Nur bei 1, 2 oder 3 kommt ein Kommentar
-        // Das entspricht ungefähr 30 Prozent Chance pro Runde
-        if (commentChance > 3) {
+        if (commentChance > 30) {
             return;
         }
 
-        // Zufälliges Tier aus der Liste auswählen
         int randomIndex = (int) (Math.random() * animals.size());
         Animal randomAnimal = animals.get(randomIndex);
 
-        // Zufälligen Kommentar auswählen
         int commentNumber = (int) (Math.random() * 8) + 1;
 
-        if (commentNumber == 1) {
-            System.out.println(randomAnimal.getName() + " schaut dich an wie ein unbezahlter Praktikant.");
-        } else if (commentNumber == 2) {
-            System.out.println(randomAnimal.getName() + " hat Hauptcharakter-Energie und keinerlei Qualifikation.");
-        } else if (commentNumber == 3) {
-            System.out.println(randomAnimal.getName() + " fordert ein Meeting. Niemand weiß worüber.");
-        } else if (commentNumber == 4) {
-            System.out.println(randomAnimal.getName() + " starrt dramatisch in die Ferne. Es regnet nicht mal.");
-        } else if (commentNumber == 5) {
-            System.out.println(randomAnimal.getName() + " war kurz produktiv. Die Gerüchte konnten nicht bestätigt werden.");
-        } else if (commentNumber == 6) {
-            System.out.println(randomAnimal.getName() + " plant etwas mit Excel. Das kann nicht gut sein.");
-        } else if (commentNumber == 7) {
-            System.out.println(randomAnimal.getName() + " macht Geräusche, die nach Beschwerde-Mail klingen.");
-        } else {
-            System.out.println(randomAnimal.getName() + " existiert heute im Energiesparmodus.");
+        GameStyle.logBox("TIERISCHE MELDUNG");
+
+        switch (commentNumber) {
+            case 1:
+                System.out.println(randomAnimal.getName() + " wirkt unbezahlt.");
+                break;
+
+            case 2:
+                System.out.println(randomAnimal.getName() + " fordert ein Meeting. Grund unklar.");
+                break;
+
+            case 3:
+                System.out.println(randomAnimal.getName() + " hat Hauptcharakter-Energie.");
+                break;
+
+            case 4:
+                System.out.println(randomAnimal.getName() + " ignoriert die Farmordnung.");
+                break;
+
+            case 5:
+                System.out.println(randomAnimal.getName() + " existiert heute im Energiesparmodus.");
+                break;
+
+            case 6:
+                System.out.println(randomAnimal.getName() + " plant etwas mit Excel.");
+                break;
+
+            case 7:
+                System.out.println(randomAnimal.getName() + " schaut nach Beschwerde-Mail aus.");
+                break;
+
+            default:
+                System.out.println(randomAnimal.getName() + " beantragt emotionalen Sonderurlaub.");
+                break;
         }
+
+        GameStyle.endBox();
     }
 
-    // Entfernt Tiere, die verhungert sind oder zu lange krank waren
+    // Entfernt Tiere, deren Hunger zu hoch ist
+// oder die zu lange krank waren
     public void removeDeadAnimals() {
 
-        // Wir gehen rückwärts durch die Liste.
-        // Das ist sicherer, wenn wir Elemente aus einer Liste entfernen.
+        // Wir zählen rückwärts, weil beim Entfernen sonst die Liste durcheinander kommen kann
         for (int i = animals.size() - 1; i >= 0; i--) {
 
-            // Tier an der aktuellen Position holen
             Animal animal = animals.get(i);
 
-            // Prüfen, ob das Tier verhungert ist
-            if (animal.getHunger() > 100) {
+            boolean diesFromHunger = animal.getHunger() >= 100;
+            boolean diesFromDisease = animal.isSick() && animal.getSickRounds() >= 5;
 
-                System.out.println(animal.getName() + " ist verhungert und wurde von der Farm entfernt.");
-                System.out.println("Die Farm hält eine sehr kurze, aber emotionale Gedenkminute.");
+            if (diesFromHunger || diesFromDisease) {
 
-                // Tier aus der Liste entfernen
+                GameStyle.logBox("TIERREGISTER-AUSTRAGUNG");
+
+                System.out.println(GameStyle.label("Betroffenes Tier: ")
+                        + animal.getName()
+                        + " "
+                        + getPersonalityIcon(animal)
+                        + " "
+                        + GameStyle.BRIGHT_PURPLE
+                        + animal.getPersonality()
+                        + GameStyle.RESET);
+
+                System.out.println(GameStyle.label("Hungerstatus: ")
+                        + GameStyle.getHungerBar(animal.getHunger()));
+
+                if (animal.isSick()) {
+                    System.out.println(GameStyle.label("Diagnose: ")
+                            + GameStyle.BRIGHT_RED
+                            + animal.getDiseaseName()
+                            + GameStyle.RESET);
+
+                    System.out.println(GameStyle.label("Krank seit: ")
+                            + animal.getSickRounds()
+                            + " Runden");
+                }
+
+                System.out.println();
+
+                System.out.println(animal.getName()
+                        + " hat die Farm verlassen.");
+
+                if (diesFromHunger) {
+                    System.out.println("Offizieller Grund: Versorgungslage dauerhaft katastrophal.");
+                }
+
+                if (diesFromDisease) {
+                    System.out.println("Offizieller Grund: Krankheitsfall wurde zu lange ignoriert.");
+                    System.out.println("Das Gesundheitsamt nennt das \"organisatorisch bemerkenswert\".");
+                }
+
+                System.out.println("Die Farmverwaltung spricht von einem bedauerlichen Einzelfall.");
+                System.out.println("Es ist nicht der erste Einzelfall.");
+
                 animals.remove(i);
 
-                // Prüfen, ob das Tier zu lange krank war
-            } else if (animal.isSick() && animal.getSickRounds() >= 5) {
-
-                System.out.println(animal.getName() + " war zu lange krank und wurde von der Farm entfernt.");
-                System.out.println("Die Tierärztin sagt: 'Das hätte man früher googeln sollen.'");
-
-                // Tier aus der Liste entfernen
-                animals.remove(i);
+                GameStyle.endBox();
             }
         }
     }
