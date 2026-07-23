@@ -29,8 +29,7 @@ public class Cow extends Animal implements ResourceProducer {
     }
 
     // Spezielle feed-Methode für die Kuh
-    // Die Kuh bekommt nur 10 Hunger abgezogen
-    // und produziert danach 1 Milch dazu.
+    // Die Kuh bekommt nur 10 Hunger abgezogen und produziert danach 1 Milch dazu.
     @Override
     public void feed() {
         setHunger(getHunger() - 10);

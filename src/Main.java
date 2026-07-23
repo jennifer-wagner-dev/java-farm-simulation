@@ -35,7 +35,7 @@ public class Main {
         // Begrüßung ausgeben
         GameStyle.printFarmIntro();
 
-        GameStyle.titleBox("Willkommen im " + farm.getFarmName());
+        GameStyle.titleBox("Willkommen in" + farm.getFarmName());
         System.out.println(GameStyle.color("Die Verwaltung wurde gestartet. Die Tiere wurden nicht gefragt.", GameStyle.BRIGHT_PURPLE));
         System.out.println(GameStyle.color("Hinweis: Enten mit Führungsambitionen sind meldepflichtig.", GameStyle.CYAN));
 
@@ -94,7 +94,6 @@ public class Main {
                     }
 
                     // Hunger aller anderen Tiere erhöhen.
-                    // Wenn das Füttern nicht geklappt hat, bekommt auch dieses Tier Hunger.
                     farm.hunger(selectedAnimal, animalWasFed);
 
                     roundCounter = finishRound(roundCounter, scanner);
@@ -127,7 +126,6 @@ public class Main {
 
                     GameStyle.pressEnterToContinue(scanner);
                     break;
-
 
                 //Ressourcenlager anzeigen
                 case "4":
@@ -216,7 +214,6 @@ public class Main {
             System.out.println("Der Abschlussbericht besteht nur aus Fragezeichen.");
             return true;
         }
-
         return false;
     }
 
@@ -446,9 +443,6 @@ public class Main {
         return roundCounter;
     }
 
-
-
-
     // Schließt eine Runde ab
     public static int finishRound(int roundCounter, Scanner scanner) {
 
@@ -469,9 +463,6 @@ public class Main {
         return roundCounter;
     }
 
-
-
-
     public static String readMenuChoice(Scanner scanner) {
 
         String choice = scanner.nextLine().trim();
@@ -482,7 +473,6 @@ public class Main {
             System.out.print(GameStyle.BRIGHT_YELLOW + "➜ Aktenzeichen deiner Entscheidung: " + GameStyle.RESET);
             choice = scanner.nextLine().trim();
         }
-
         return choice;
     }
 }

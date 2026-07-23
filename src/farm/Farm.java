@@ -297,13 +297,10 @@ public class Farm {
         String personalityEffect = applyPersonalityAfterFeeding(animal);
 
         System.out.println(GameStyle.BRIGHT_GREEN + "✓ Versorgung durchgeführt." + GameStyle.RESET);
-
         System.out.println(GameStyle.label("Hunger vorher: ")
                 + GameStyle.getHungerBar(hungerBefore));
-
         System.out.println(GameStyle.label("Hunger nachher:  ")
                 + GameStyle.getHungerBar(animal.getHunger()));
-
         System.out.println(GameStyle.label("Budgetstatus: ")
                 + GameStyle.money(money));
 
@@ -343,7 +340,7 @@ public class Farm {
         }
     }
 
-// Gibt zurück, wie viel das Füttern kostet
+    // Gibt zurück, wie viel das Füttern kostet
     public int getFeedCost(Animal animal) {
 
         int feedCost = 6;
@@ -619,10 +616,8 @@ public class Farm {
     // Wenn ein Tier gefüttert wurde, wird genau dieses Tier nicht erhöht.
     public void hunger(Animal fedAnimal, boolean animalWasFed) {
 
-        // Alle Tiere durchgehen
         for (Animal animal : animals) {
 
-            // Prüfen, ob dieses Tier gerade gefüttert wurde
             boolean isFedAnimal = animalWasFed && animal == fedAnimal;
 
             // Nur Tiere, die nicht erfolgreich gefüttert wurden,
@@ -636,10 +631,8 @@ public class Farm {
     // Erhöht das Alter aller Tiere
     public void increaseAge() {
 
-        // Alle Tiere durchgehen
         for (Animal animal : animals) {
 
-            // Alter um 1 erhöhen
             animal.setAge(animal.getAge() + 1);
         }
     }
@@ -647,7 +640,6 @@ public class Farm {
     // Erhöht bei allen kranken Tieren die Krankheitsdauer
     public void increaseSickRounds() {
 
-        // Alle Tiere durchgehen
         for (Animal animal : animals) {
 
             // Animal prüft selbst, ob es krank ist
@@ -655,8 +647,7 @@ public class Farm {
         }
     }
 
-    // Sammelt die Ressourcen von allen Tieren ein,
-// die das Interface ResourceProducer verwenden
+    // Sammelt die Ressourcen von allen Tieren ein die Interface ResourceProducer verwenden
     public void collectResources() {
 
         GameStyle.logBox("RESSOURCENPRÜFUNG");
@@ -666,15 +657,12 @@ public class Farm {
         System.out.println("Tierische Sachleistungen werden eingesammelt.");
         System.out.println();
 
+
         for (Animal animal : animals) {
-
             if (animal instanceof ResourceProducer producer) {
-
                 int collectedAmount = producer.collectResource();
                 String resourceName = producer.getResourceName();
-
                 switch (resourceName) {
-
                     case "Wolle":
                         storedWool = storedWool + collectedAmount;
                         break;
@@ -695,8 +683,8 @@ public class Farm {
                         GameStyle.warning("Unbekannte Ressource: " + resourceName);
                         break;
                 }
-
                 totalCollected = totalCollected + collectedAmount;
+
 
                 System.out.println(GameStyle.BRIGHT_GREEN + "• " + GameStyle.RESET
                         + animal.getName()
@@ -743,33 +731,27 @@ public class Farm {
         System.out.println("Die Farmverwaltung öffnet das Lager.");
         System.out.println("Es riecht nach Heu, Hoffnung und ungeklärter Buchhaltung.");
         System.out.println();
-
         System.out.println(GameStyle.label("Amtlich erfasster Bestand:"));
-
         System.out.println(GameStyle.BRIGHT_GREEN + "• " + GameStyle.RESET
                 + "Wolle:   "
                 + GameStyle.BRIGHT_YELLOW
                 + storedWool
                 + GameStyle.RESET);
-
         System.out.println(GameStyle.BRIGHT_GREEN + "• " + GameStyle.RESET
                 + "Milch:   "
                 + GameStyle.BRIGHT_YELLOW
                 + storedMilk
                 + GameStyle.RESET);
-
         System.out.println(GameStyle.BRIGHT_GREEN + "• " + GameStyle.RESET
                 + "Eier:    "
                 + GameStyle.BRIGHT_YELLOW
                 + storedEggs
                 + GameStyle.RESET);
-
         System.out.println(GameStyle.BRIGHT_GREEN + "• " + GameStyle.RESET
                 + "Federn:  "
                 + GameStyle.BRIGHT_YELLOW
                 + storedFeathers
                 + GameStyle.RESET);
-
         System.out.println();
 
         int totalResources = storedWool + storedMilk + storedEggs + storedFeathers;
@@ -847,17 +829,14 @@ public class Farm {
                 + earnedMoney
                 + " Münzen"
                 + GameStyle.RESET);
-
         System.out.println(GameStyle.label("Budget: ")
                 + GameStyle.money(money));
-
         System.out.println("Die Ente nennt es Skalierung.");
 
         GameStyle.endBox();
     }
 
     // Behandelt ein krankes Tier anhand seines Namens
-// Behandelt ein krankes Tier anhand seines Namens
     public void treatAnimalByName(String name) {
 
         GameStyle.logBox("TIERÄRZTIN");
@@ -929,9 +908,7 @@ public class Farm {
 
         System.out.println(GameStyle.BRIGHT_GREEN + "✓ Behandlung erfolgreich." + GameStyle.RESET);
         System.out.println(treatmentMessage);
-
         System.out.println();
-
         System.out.println(GameStyle.label("Budget danach: ")
                 + GameStyle.money(money));
 
@@ -946,15 +923,12 @@ public class Farm {
             return;
         }
 
-        // Zufallszahl zwischen 1 und 10
         int randomNumber = (int) (Math.random() * 10) + 1;
 
-        // Nur bei 20% Wahrscheinlichkeit passiert etwas
         if (randomNumber > 2) {
             return;
         }
 
-        // Zufälliges Tier auswählen
         int randomIndex = (int) (Math.random() * animals.size());
         Animal randomAnimal = animals.get(randomIndex);
 
@@ -963,8 +937,7 @@ public class Farm {
             return;
         }
 
-        // Schüchterne Tiere haben manchmal Glück,
-        // weil sie sich rechtzeitig verstecken
+        // Schüchterne Tiere haben manchmal Glück weil sie sich rechtzeitig verstecken
         if (randomAnimal.getPersonality().equals("schüchtern")) {
             int hideChance = (int) (Math.random() * 2) + 1;
 
@@ -1084,15 +1057,12 @@ public class Farm {
             return;
         }
 
-        // Zufallszahl zwischen 1 und 100
         int randomNumber = (int) (Math.random() * 100) + 1;
 
-        // Nicht jede Runde soll ein Ereignis passieren
         if (randomNumber > 35) {
             return;
         }
 
-        // Zufälliges Ereignis auswählen
         int eventNumber = (int) (Math.random() * 5) + 1;
 
         if (eventNumber == 1) {
@@ -1297,7 +1267,6 @@ public class Farm {
     }
 
     // Besonderes Ereignis: Das Farmgericht tagt
-// Besonderes Ereignis: Das Farmgericht tagt
     public void farmCourtEvent(Scanner scanner) {
 
         GameStyle.logBox("FARMGERICHT");
@@ -1373,7 +1342,7 @@ public class Farm {
     }
 
     // Option 1: Außergerichtliche Einigung
-// Option 1: Vergleich zahlen
+    // Option 1: Vergleich zahlen
     public void handleCourtBribe(Animal accuser) {
 
         int settlementCost = 20;
@@ -1407,7 +1376,6 @@ public class Farm {
     }
 
     // Option 2: Dramatische Verteidigungsrede
-// Option 2: Verteidigungsrede
     public void handleCourtSpeech(Animal accuser) {
 
         int randomNumber = (int) (Math.random() * 2) + 1;
@@ -1435,7 +1403,6 @@ public class Farm {
     }
 
     // Option 3: Sündenbock benennen
-// Option 3: Sündenbock benennen
     public void handleCourtScapegoat(Animal accuser) {
 
         if (animals.size() < 2) {
@@ -1472,7 +1439,6 @@ public class Farm {
     }
 
     // Option 4: Schweigen
-// Option 4: Schweigen
     public void handleCourtSilence(Animal accuser) {
 
         System.out.println("Du schweigst.");
@@ -1542,8 +1508,7 @@ public class Farm {
         GameStyle.endBox();
     }
 
-    // Entfernt Tiere, deren Hunger zu hoch ist
-// oder die zu lange krank waren
+    // Entfernt Tiere, deren Hunger zu hoch ist oder die zu lange krank waren
     public void removeDeadAnimals() {
 
         // Wir zählen rückwärts, weil beim Entfernen sonst die Liste durcheinander kommen kann
