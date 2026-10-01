@@ -1,43 +1,77 @@
 # 🐄 Java Farm Simulation
 
-A Java console application that simulates a small farm with different animals, diseases, random events and interactions between the individual components.
+A Java console application that simulates the day-to-day management of a small farm.
 
-The project was developed as part of my software development training and focuses on object-oriented programming and the implementation of more complex application logic.
+The project was developed during my software development training at CODERS.BAY and focuses on object-oriented design, interactions between multiple classes and managing application state across a larger codebase.
 
-## 🚀 Features
+## 🚀 What the application does
 
-- Different animal types such as cows, sheep and chickens
-- Round-based farm simulation
-- Diseases that can affect and spread between animals
-- Veterinary treatment of sick animals
-- Random farm events
-- Interaction between different objects and game mechanics
+The simulation lets the user manage a farm through a console-based interface.
 
-## 🛠 Technologies
+Current features include:
+
+- managing different animal types such as cows, sheep, chickens and ducks
+- feeding individual animals or groups of animals
+- collecting and selling resources
+- tracking hunger and animal health
+- diseases and veterinary treatment
+- random events during the simulation
+- creating additional animals
+- managing the farm budget and resource storage
+- round-based progression
+- a styled console interface
+
+## 🛠 Tech Stack
 
 - Java
 - Object-Oriented Programming
 - Java Collections
 
-## 💡 Concepts Used
+## 🧩 Object-Oriented Design
 
-- Classes and objects
-- Inheritance
-- Interfaces
-- Abstract classes
-- Polymorphism
-- Collections
-- Methods and application logic
-- Random events
-- Encapsulation
+The project uses several OOP concepts to model the different parts of the farm:
+
+- **Inheritance** – individual animal types extend a common `Animal` base class
+- **Interfaces** – behaviours such as resource production and hunger management are represented through interfaces
+- **Polymorphism** – different animal types can be handled through shared abstractions
+- **Encapsulation** – animal and farm state is managed inside the relevant classes
+- **Collections** – groups of animals and resources are managed dynamically
+
+## 📁 Project Structure
+
+```text
+src/
+├── Main.java
+├── animals/
+│   ├── Animal.java
+│   ├── Cow.java
+│   ├── Sheep.java
+│   ├── Chicken.java
+│   ├── Duck.java
+│   ├── HungerManager.java
+│   └── ResourceProducer.java
+├── farm/
+│   └── Farm.java
+└── style/
+    └── GameStyle.java
+```
+
+### Responsibilities
+
+- **Main** – handles the console interaction and main application flow
+- **Animal hierarchy** – models shared and animal-specific behaviour
+- **Farm** – manages animals, resources, money and simulation logic
+- **GameStyle** – contains console output and styling utilities
 
 ## 🧠 What I Learned
 
-This project helped me understand how different classes can interact within a larger application.
+This was one of my first larger Java projects and helped me move from isolated programming exercises toward an application where multiple components interact with each other.
 
-One of the more challenging parts was designing the disease system. Instead of handling illness as an isolated value, I had to think about how diseases affect individual animals and how they can spread throughout the farm.
+A particularly useful challenge was modelling behaviours that apply differently across animal types while still keeping common functionality reusable.
 
-I also learned how important it is to separate responsibilities between classes and keep the application logic structured as a project becomes more complex.
+The project also showed me how quickly responsibilities can grow inside individual classes. Looking back at the code now, I can already identify areas I would structure differently in a newer project — especially by splitting orchestration logic into smaller services and adding automated tests.
+
+That is one of the main reasons I keep this project in my portfolio: it shows both the OOP concepts I learned and how my approach to software design has developed since then.
 
 ## ▶️ Running the Project
 
@@ -49,13 +83,13 @@ git clone https://github.com/jennifer-wagner-dev/java-farm-simulation.git
 
 2. Open the project in IntelliJ IDEA or another Java IDE.
 
-3. Run the main application class.
+3. Run `Main.java`.
 
-## 🔮 Ideas for Future Development
+## 🔮 Possible Next Steps
 
-Some features I would like to add in the future:
+If I continue developing the project, the next improvements would be:
 
-- More interactions between animals and the environment
-- Additional random farm events
-- More detailed animal behaviour
-- Further development of the disease and treatment system
+- refactoring larger classes into smaller responsibilities
+- adding unit tests
+- separating user interaction from application logic more clearly
+- adding more simulation events and animal behaviour
