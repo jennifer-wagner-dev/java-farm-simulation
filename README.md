@@ -21,6 +21,12 @@ Current features include:
 - round-based progression
 - a styled console interface
 
+## 📸 Application Preview
+
+![Main Menu](screenshots/01-main-menu.png)
+
+[View all application screenshots](screenshots/README.md)
+
 ## 🛠 Tech Stack
 
 - Java
